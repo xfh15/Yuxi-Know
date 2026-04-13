@@ -140,6 +140,12 @@ const router = useRouter()
 const { agents, selectedAgentId, isLoadingConfig } = storeToRefs(agentStore)
 
 const syncingRouteThread = ref(false)
+const displayConfigName = computed(() => {
+  const name = selectedConfigSummary.value?.name
+  if (!name) return '設定'
+  if (name === '初始配置') return '初期設定'
+  return name
+})
 
 const getRouteThreadId = () => {
   const value = route.params.thread_id

@@ -127,7 +127,7 @@
               <!-- 加载状态：加载消息 -->
               <div v-if="isLoadingMessages" class="chat-loading">
                 <div class="loading-spinner"></div>
-                <span>正在加载消息...</span>
+                <span>メッセージを読み込み中...</span>
               </div>
 
               <!-- 打招呼区域 - 在输入框上方 -->
@@ -275,7 +275,7 @@
               />
 
               <div class="bottom-actions" v-if="conversations.length > 0">
-                <p class="note">当前智能体：{{ currentThreadAgentName }}；请注意辨别内容的可靠性</p>
+                <p class="note">現在のエージェント: {{ currentThreadAgentName }}。内容の信頼性にはご注意ください</p>
               </div>
             </div>
           </div>
@@ -750,12 +750,13 @@ const steeringRequestIds = reactive(new Set())
 let sendCooldownTimer = null
 // 预设的打招呼文本
 const greetingMessages = [
-  '👋 您好，有什么可以帮您？',
-  '👋 你好！有什么想聊的吗？',
-  '👋 嘿，有什么我可以帮助你的？',
-  '👋 欢迎！今天想讨论什么话题？',
-  '👋 你好呀，随时为你服务！'
+  '👋 こんにちは。何をお手伝いしましょうか？',
+  '👋 こんにちは。今日は何を話しますか？',
+  '👋 ようこそ。どんなことでも聞いてください。',
+  '👋 今日はどんなテーマを進めますか？',
+  '👋 いつでもお手伝いできます。'
 ]
+const defaultThreadTitles = ['新的对话', '新しい会話']
 
 // 随机选择一个打招呼文本
 const randomGreeting = greetingMessages[Math.floor(Math.random() * greetingMessages.length)]
@@ -1059,7 +1060,7 @@ const currentAgentId = computed(() => {
 
 const currentAgentName = computed(() => {
   const agent = currentAgent.value
-  return agent ? agent.name : '智能体'
+  return agent ? agent.name : 'エージェント'
 })
 
 const currentAgent = computed(() => {
@@ -2424,10 +2425,10 @@ const fetchAgentState = async (agentId, threadId, { required = false } = {}) => 
   }
 }
 
-const ensureActiveThread = async (title = '新的对话') => {
+const ensureActiveThread = async (title = '新しい会話') => {
   if (currentChatId.value) return currentChatId.value
   try {
-    const newThread = await createThread(currentAgentId.value, title || '新的对话')
+    const newThread = await createThread(currentAgentId.value, title || '新しい会話')
     if (newThread) {
       setCurrentThreadId(newThread.id)
       return newThread.id
@@ -2442,7 +2443,7 @@ const handleAttachmentUpload = async (files = []) => {
   if (
     !AgentValidator.validateAgentIdWithError(
       currentAgentId.value,
-      '上传附件',
+      '添付ファイルをアップロード',
       handleValidationError
     )
   )
@@ -2746,7 +2747,7 @@ const handleSendMessage = async ({ image, queuePolicy = 'enqueue' } = {}) => {
   if (!threadId) {
     threadId = await ensureActiveThread(text)
     if (!threadId) {
-      message.error('创建对话失败，请重试')
+      message.error('会話の作成に失敗しました。再試行してください')
       return
     }
     // 新建线程：把草稿态的模型选择迁移到真实线程，避免选择丢失
@@ -2913,14 +2914,14 @@ const handleApprovalWithStream = async (answer) => {
   const threadId = approvalState.threadId
   const interruptedRunId = approvalState.interruptedRunId
   if (!threadId) {
-    message.error('无效的提问请求')
+    message.error('無効な質問リクエストです')
     approvalState.showModal = false
     return
   }
 
   const threadState = getThreadState(threadId)
   if (!threadState) {
-    message.error('无法找到对应的对话线程')
+    message.error('対応する会話スレッドが見つかりません')
     approvalState.showModal = false
     return
   }
@@ -2981,8 +2982,8 @@ const buildExportPayload = () => {
   }
 
   const payload = {
-    chatTitle: currentThread.value?.title || '新对话',
-    agentName: currentAgentName.value || currentAgent.value?.name || '智能助手',
+    chatTitle: currentThread.value?.title || '新しい会話',
+    agentName: currentAgentName.value || currentAgent.value?.name || 'AIアシスタント',
     agentDescription: agentDescription || currentAgent.value?.description || '',
     messages: conversations.value ? JSON.parse(JSON.stringify(conversations.value)) : [],
     onGoingMessages: onGoingConvMessages.value

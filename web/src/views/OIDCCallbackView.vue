@@ -3,19 +3,25 @@
     <div class="callback-container">
       <div v-if="loading" class="loading-section">
         <a-spin size="large" />
-        <p class="loading-text">正在处理登录...</p>
+        <p class="loading-text">{{ t('auth.processingLogin') }}</p>
       </div>
 
       <div v-else-if="error" class="error-section">
         <a-result status="error" :title="errorTitle" :sub-title="errorMessage">
           <template #extra>
-            <a-button type="primary" @click="goToLogin"> 返回登录页 </a-button>
+            <a-button type="primary" @click="goToLogin">
+              {{ t('common.backToLogin') }}
+            </a-button>
           </template>
         </a-result>
       </div>
 
       <div v-else class="success-section">
-        <a-result status="success" title="登录成功" sub-title="正在跳转...">
+        <a-result
+          status="success"
+          :title="t('auth.loginSuccess')"
+          :sub-title="t('auth.redirecting')"
+        >
           <template #icon>
             <a-spin />
           </template>
@@ -28,6 +34,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useUserStore } from '@/stores/user'
 import { useAgentStore } from '@/stores/agent'
 import { authApi } from '@/apis/auth_api'
@@ -36,14 +43,15 @@ import { clearAutoStartAttempt } from '@/utils/oidcAutoStart'
 
 const router = useRouter()
 const route = useRoute()
+const { t } = useI18n()
 const userStore = useUserStore()
 const agentStore = useAgentStore()
 
 // 状态
 const loading = ref(true)
 const error = ref(false)
-const errorTitle = ref('登录失败')
-const errorMessage = ref('处理登录请求时发生错误')
+const errorTitle = ref(t('auth.loginFailed'))
+const errorMessage = ref(t('auth.processingLoginError'))
 
 // 返回登录页
 const goToLogin = () => {
@@ -59,8 +67,8 @@ const handleCallback = async () => {
     if (!code || typeof code !== 'string') {
       loading.value = false
       error.value = true
-      errorTitle.value = '参数错误'
-      errorMessage.value = '缺少有效的登录 code，请重新登录'
+      errorTitle.value = t('auth.invalidParams')
+      errorMessage.value = t('auth.missingLoginCode')
       return
     }
 
@@ -83,7 +91,7 @@ const handleCallback = async () => {
     localStorage.setItem('user_token', tokenData.access_token)
 
     // 显示成功消息
-    message.success('登录成功')
+    message.success(t('auth.loginSuccess'))
 
     // 获取重定向路径并清理 OIDC 相关标记
     const redirectPath = sessionStorage.getItem('oidc_redirect') || '/'
@@ -111,16 +119,16 @@ const handleCallback = async () => {
     console.error('OIDC 回调处理失败:', err)
     loading.value = false
     error.value = true
-    errorTitle.value = '登录失败'
-    errorMessage.value = err?.message || '处理登录请求时发生错误，请重试'
+    errorTitle.value = t('auth.loginFailed')
+    errorMessage.value = err?.message || t('auth.processingLoginErrorRetry')
   }
 }
 
 // 组件挂载时处理回调
 onMounted(async () => {
-  // 如果已登录，跳转到首页
+  // 如果已登录，直接跳转到后台
   if (userStore.isLoggedIn) {
-    router.push('/')
+    router.push('/agent')
     return
   }
 

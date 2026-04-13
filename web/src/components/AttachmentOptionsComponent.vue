@@ -180,9 +180,9 @@ const processImageUpload = async (file) => {
     // 发出上传成功通知事件，用于关闭选项面板
     emit('upload-image-success')
   } catch (error) {
-    console.error('图片上传失败:', error)
+    console.error('Failed to upload image:', error)
     message.error({
-      content: `图片上传失败: ${error.message || '未知错误'}`,
+      content: `画像のアップロードに失敗しました: ${error.message || '不明なエラー'}`,
       key: 'image-upload'
     })
   }

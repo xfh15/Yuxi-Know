@@ -33,6 +33,7 @@ from yuxi.services.auth_service import (
 from yuxi.storage.minio import upload_image_to_minio
 from yuxi.storage.minio.client import normalize_public_minio_url
 from yuxi.utils.datetime_utils import utc_now_naive
+from yuxi.i18n import tr
 
 # OIDC 认证相关导入
 from yuxi.services.oidc_service import (
@@ -198,7 +199,11 @@ def _raise_cli_auth_error(exc: CLIAuthError) -> None:
 
 
 @auth.post("/token", response_model=Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
+async def login_for_access_token(
+    request: Request,
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: AsyncSession = Depends(get_db),
+):
     # 查找用户 - 支持user_id和phone_number登录
     login_identifier = form_data.username  # OAuth2表单中的username字段作为登录标识符
 
@@ -232,7 +237,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         remaining_time = user.get_remaining_lock_time()
         raise HTTPException(
             status_code=status.HTTP_423_LOCKED,
-            detail=f"登录被锁定，请等待 {remaining_time} 秒后再试",
+            detail=tr(request, "登录被锁定，请等待 {remaining_time} 秒后再试", remaining_time=remaining_time),
             headers={"WWW-Authenticate": "Bearer", "X-Lock-Remaining": str(remaining_time)},
         )
 
@@ -250,7 +255,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
             remaining_time = user.get_remaining_lock_time()
             raise HTTPException(
                 status_code=status.HTTP_423_LOCKED,
-                detail=f"由于多次登录失败，账户已被锁定 {remaining_time} 秒",
+                detail=tr(request, "由于多次登录失败，账户已被锁定 {remaining_time} 秒", remaining_time=remaining_time),
                 headers={"WWW-Authenticate": "Bearer", "X-Lock-Remaining": str(remaining_time)},
             )
         else:
@@ -925,7 +930,10 @@ async def check_uid_availability(
 # 路由：上传用户头像
 @auth.post("/upload-avatar")
 async def upload_user_avatar(
-    file: UploadFile = File(...), current_user: User = Depends(get_required_user), db: AsyncSession = Depends(get_db)
+    request: Request,
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_required_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """上传用户头像"""
     try:
@@ -940,12 +948,15 @@ async def upload_user_avatar(
         await db.commit()
         await log_operation(db, current_user.id, "上传头像", f"更新头像: {avatar_url}")
 
-        return {"success": True, "avatar_url": avatar_url, "message": "头像上传成功"}
+        return {"success": True, "avatar_url": avatar_url, "message": tr(request, "头像上传成功")}
 
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"头像上传失败: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=tr(request, "头像上传失败: {error}", error=str(e)),
+        )
 
 
 # 路由：模拟用户登录（超级管理员专用）

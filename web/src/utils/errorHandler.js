@@ -1,4 +1,5 @@
 import { message } from 'ant-design-vue'
+import { translate } from '@/i18n'
 
 /**
  * 统一错误处理工具类
@@ -10,7 +11,7 @@ export class ErrorHandler {
    * @param {string} context - 错误上下文
    * @param {Object} options - 配置选项
    */
-  static handleError(error, context = '操作', options = {}) {
+  static handleError(error, context = translate('errors.contexts.operation'), options = {}) {
     const {
       showMessage = true,
       logToConsole = true,
@@ -52,9 +53,9 @@ export class ErrorHandler {
    */
   static getErrorMessage(error, context) {
     if (error?.message) {
-      return `${context}失败: ${error.message}`
+      return translate('errors.operationFailedWithMessage', { context, message: error.message })
     }
-    return `${context}失败`
+    return translate('errors.operationFailed', { context })
   }
 
   /**
@@ -62,19 +63,19 @@ export class ErrorHandler {
    * @param {Error} error - 错误对象
    * @param {string} context - 错误上下文
    */
-  static handleNetworkError(error, context = '网络请求') {
+  static handleNetworkError(error, context = translate('errors.contexts.networkRequest')) {
     let customMessage = null
 
     if (error?.code === 'NETWORK_ERROR') {
-      customMessage = '网络连接失败，请检查网络设置'
+      customMessage = translate('errors.networkConnectionFailed')
     } else if (error?.status === 401) {
-      customMessage = '认证失败，请重新登录'
+      customMessage = translate('errors.authFailedRelogin')
     } else if (error?.status === 403) {
-      customMessage = '权限不足，无法执行此操作'
+      customMessage = translate('errors.permissionDenied')
     } else if (error?.status === 404) {
-      customMessage = '请求的资源不存在'
+      customMessage = translate('errors.resourceNotFound')
     } else if (error?.status >= 500) {
-      customMessage = '服务器错误，请稍后重试'
+      customMessage = translate('errors.serverErrorRetry')
     }
 
     return this.handleError(error, context, { customMessage })
@@ -87,13 +88,13 @@ export class ErrorHandler {
    */
   static handleChatError(error, operation) {
     const contextMap = {
-      send: '发送消息',
-      create: '创建对话',
-      delete: '删除对话',
-      rename: '重命名对话',
-      load: '加载对话',
-      export: '导出对话',
-      stream: '流式处理'
+      send: translate('errors.contexts.sendMessage'),
+      create: translate('errors.contexts.createConversation'),
+      delete: translate('errors.contexts.deleteConversation'),
+      rename: translate('errors.contexts.renameConversation'),
+      load: translate('errors.contexts.loadConversation'),
+      export: translate('errors.contexts.exportConversation'),
+      stream: translate('errors.contexts.streamProcessing')
     }
 
     const context = contextMap[operation] || operation
@@ -105,7 +106,7 @@ export class ErrorHandler {
    * @param {string} message - 验证错误消息
    */
   static handleValidationError(message) {
-    return this.handleError(new Error(message), '输入验证', {
+    return this.handleError(new Error(message), translate('errors.contexts.inputValidation'), {
       severity: 'warning',
       customMessage: message
     })

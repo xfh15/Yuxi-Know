@@ -1,27 +1,27 @@
 <template>
-  <a-card title="知识库使用情况" :loading="loading" class="dashboard-card">
+  <a-card title="ナレッジベース利用状況" :loading="loading" class="dashboard-card">
     <!-- 知识库概览 -->
     <div class="stats-overview">
       <a-row :gutter="16">
         <a-col :span="8">
           <a-statistic
-            title="知识库总数"
+            title="ナレッジベース総数"
             :value="knowledgeStats?.total_databases || 0"
             :value-style="{ color: 'var(--color-info-500)' }"
-            suffix="个"
+            suffix="件"
           />
         </a-col>
         <a-col :span="8">
           <a-statistic
-            title="文件总数"
+            title="ファイル総数"
             :value="knowledgeStats?.total_files || 0"
             :value-style="{ color: 'var(--color-success-500)' }"
-            suffix="个"
+            suffix="件"
           />
         </a-col>
         <a-col :span="8">
           <a-statistic
-            title="存储容量"
+            title="ストレージ容量"
             :value="formattedStorageSize"
             :value-style="{ color: 'var(--color-warning-500)' }"
           />
@@ -36,7 +36,7 @@
       <!-- 文件类型分布 -->
       <a-col :span="24">
         <div class="chart-container">
-          <h4>文件类型分布</h4>
+          <h4>ファイルタイプ分布</h4>
           <div ref="fileTypeChartRef" class="chart donut-chart-container">
             <div class="carousel-info" v-if="fileTypeData.length > 0">
               <div
@@ -161,7 +161,7 @@ const initFileTypeChart = () => {
   if (Object.keys(fileTypesData).length > 0) {
     const data = Object.entries(fileTypesData)
       .map(([type, count]) => ({
-        name: type || '未知',
+        name: type || '不明',
         value: count
       }))
       .sort((a, b) => b.value - a.value) // 按数量排序
@@ -198,7 +198,7 @@ const initFileTypeChart = () => {
       },
       series: [
         {
-          name: '文件类型',
+          name: 'ファイルタイプ',
           type: 'pie',
           radius: ['45%', '75%'], // 调整为更大的环，为中心信息留出更多空间
           center: ['50%', '45%'], // 向上移动，为中心和底部图例留出空间
@@ -271,7 +271,7 @@ const initFileTypeChart = () => {
           labelLine: {
             show: false
           },
-          data: [{ name: '暂无数据', value: 1 }],
+          data: [{ name: 'データなし', value: 1 }],
           color: [getCSSVariable('--color-info-500')]
         }
       ]

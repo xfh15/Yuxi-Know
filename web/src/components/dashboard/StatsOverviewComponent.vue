@@ -22,7 +22,7 @@
         </div>
         <div class="stat-content">
           <div class="stat-value">{{ basicStats?.active_conversations || 0 }}</div>
-          <div class="stat-label">活跃对话</div>
+          <div class="stat-label">アクティブ会話</div>
         </div>
       </div>
 
@@ -32,7 +32,7 @@
         </div>
         <div class="stat-content">
           <div class="stat-value">{{ basicStats?.total_messages || 0 }}</div>
-          <div class="stat-label">总消息数</div>
+          <div class="stat-label">メッセージ総数</div>
         </div>
       </div>
 
@@ -42,7 +42,7 @@
         </div>
         <div class="stat-content">
           <div class="stat-value">{{ basicStats?.total_users || 0 }}</div>
-          <div class="stat-label">用户数</div>
+          <div class="stat-label">ユーザー数</div>
         </div>
       </div>
 
@@ -52,7 +52,7 @@
         </div>
         <div class="stat-content">
           <div class="stat-value">{{ basicStats?.feedback_stats?.total_feedbacks || 0 }}</div>
-          <div class="stat-label">总反馈数</div>
+          <div class="stat-label">フィードバック総数</div>
         </div>
       </div>
 
@@ -62,7 +62,7 @@
         </div>
         <div class="stat-content">
           <div class="stat-value">{{ basicStats?.feedback_stats?.satisfaction_rate || 0 }}%</div>
-          <div class="stat-label">满意度</div>
+          <div class="stat-label">満足度</div>
         </div>
       </div>
     </div>

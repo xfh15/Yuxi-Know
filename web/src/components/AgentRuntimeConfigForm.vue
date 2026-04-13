@@ -16,7 +16,7 @@
             <a-alert
               v-if="isEmptyConfig"
               type="warning"
-              message="该智能体没有配置项"
+              message="このエージェントには設定項目がありません"
               show-icon
               class="config-alert"
             />
@@ -51,7 +51,7 @@
                       {{ agentConfig[key] || getPlaceholder(key, value) }}
                     </div>
                     <div class="edit-hint">
-                      {{ isReadOnlyConfig ? '查看' : '点击查看并编辑' }}
+                      {{ isReadOnlyConfig ? '表示' : 'クリックして表示・編集' }}
                     </div>
                   </div>
                 </div>
@@ -98,7 +98,7 @@
                           @click="clearSelection(key)"
                           v-if="getSelectedCount(key) > 0"
                         >
-                          清空
+                          クリア
                         </a-button>
                         <template v-if="isToolsKind(value.kind)">
                           <a-divider type="vertical" />
@@ -109,7 +109,7 @@
                             class="inline-action-btn lucide-icon-btn"
                           >
                             <RotateCw :size="12" />
-                            刷新
+                            更新
                           </a-button>
                           <a-button
                             type="link"
@@ -118,7 +118,7 @@
                             class="inline-action-btn lucide-icon-btn"
                           >
                             <Settings :size="12" />
-                            配置
+                            設定
                           </a-button>
                         </template>
                       </div>
@@ -160,8 +160,8 @@
                     <div class="selection-summary">
                       <div class="selection-summary-info">
                         <span class="selection-count"
-                          >已选择 {{ getSelectedCount(key) }} 项 | 共
-                          {{ getConfigOptions(value).length }} 项</span
+                          >選択済み {{ getSelectedCount(key) }} 件 / 全
+                          {{ getConfigOptions(value).length }} 件</span
                         >
 
                         <a-button
@@ -171,7 +171,7 @@
                           class="clear-btn"
                           @click="clearSelection(key)"
                         >
-                          清空
+                          クリア
                         </a-button>
                       </div>
 
@@ -182,7 +182,7 @@
                         class="selection-trigger-btn"
                         @click="openSelectionModal(key)"
                       >
-                        选择...
+                        選択...
                       </a-button>
                     </div>
 
@@ -256,7 +256,9 @@
 
     <a-modal
       v-model:open="selectionModalOpen"
-      :title="`选择${configurableItems[currentConfigKey]?.name || '项目'}`"
+      :title="`${
+        translateConfigDisplayName(configurableItems[currentConfigKey]?.name || '項目')
+      } を選択`"
       :width="800"
       :footer="null"
       :maskClosable="false"
@@ -266,7 +268,7 @@
         <div class="selection-search">
           <a-input
             v-model:value="selectionSearchText"
-            placeholder="搜索..."
+            placeholder="検索..."
             allow-clear
             class="search-input"
           >
@@ -280,20 +282,20 @@
               size="small"
               @click="refreshConfigOptions(currentConfigKey, currentConfigKind)"
               class="inline-action-btn lucide-icon-btn"
-              title="刷新列表"
+              title="一覧を更新"
             >
               <RotateCw :size="14" />
-              刷新
+              更新
             </a-button>
             <a-button
               type="text"
               size="small"
               @click="navigateToConfigPage(currentConfigKind)"
               class="inline-action-btn lucide-icon-btn"
-              title="跳转配置"
+              title="設定画面へ移動"
             >
               <Settings :size="14" />
-              配置
+              設定
             </a-button>
           </template>
         </div>
@@ -325,13 +327,13 @@
         </div>
 
         <div class="selection-modal-footer">
-          <div class="selected-count">已选择 {{ tempSelectedValues.length }} 项</div>
+          <div class="selected-count">選択済み {{ tempSelectedValues.length }} 件</div>
 
           <div class="modal-actions">
-            <a-button @click="closeSelectionModal">取消</a-button>
+            <a-button @click="closeSelectionModal">キャンセル</a-button>
 
             <a-button v-if="!isReadOnlyConfig" type="primary" @click="confirmSelection">
-              确认
+              確認
             </a-button>
           </div>
         </div>
@@ -428,9 +430,9 @@ const currentSystemPromptKey = ref(null)
 const systemPromptDraft = ref('')
 const currentSegment = ref('model')
 const segmentOptions = [
-  { label: '模型', value: 'model' },
-  { label: '工具', value: 'tools' },
-  { label: '其他', value: 'other' }
+  { label: 'モデル', value: 'model' },
+  { label: 'ツール', value: 'tools' },
+  { label: 'その他', value: 'other' }
 ]
 const activeSegment = computed(() => (props.showSegmented ? currentSegment.value : props.segment))
 const isToolResourceKind = (kind) => isDefaultAllAgentResourceKind(kind)
@@ -487,8 +489,8 @@ const refreshConfigOptions = async () => {
     await agentStore.fetchAgentDetail(selectedAgentId.value, true)
     message.success('配置选项已刷新')
   } catch (error) {
-    console.error('刷新配置选项失败:', error)
-    message.error('刷新失败')
+    console.error('Failed to refresh config options:', error)
+    message.error('更新に失敗しました')
   }
 }
 
@@ -554,9 +556,9 @@ const systemPromptModalTitle = computed(() => {
 })
 
 const systemPromptModalPlaceholder = computed(() => {
-  if (!currentSystemPromptKey.value) return '请输入系统提示词'
+  if (!currentSystemPromptKey.value) return 'システムプロンプトを入力してください'
   const currentItem = configurableItems.value[currentSystemPromptKey.value]
-  if (!currentItem) return '请输入系统提示词'
+  if (!currentItem) return 'システムプロンプトを入力してください'
   return getPlaceholder(currentSystemPromptKey.value, currentItem)
 })
 
@@ -614,7 +616,7 @@ const getConfigLabel = (key, value) => {
 }
 
 const getPlaceholder = (_key, value) => {
-  return `（默认: ${value.default}）`
+  return `（デフォルト: ${value.default}）`
 }
 
 const handleModelChange = (key, spec) => {
@@ -766,7 +768,7 @@ const validateAndFilterConfig = () => {
 
       validatedConfig[key] = currentValue.filter((value) => validValues.has(String(value)))
       if (validatedConfig[key].length !== currentValue.length) {
-        console.warn(`配置项 ${key} 中包含无效选项，已自动过滤`)
+        console.warn(`Invalid options were filtered from config item ${key}`)
       }
     }
   })

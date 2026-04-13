@@ -1,16 +1,26 @@
 import dayjs from 'dayjs'
+import 'dayjs/locale/en'
+import 'dayjs/locale/ja'
 import 'dayjs/locale/zh-cn'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
+import { DAYJS_LOCALE_MAP, resolveInitialLocale } from '@/i18n/config'
+
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.extend(relativeTime)
-dayjs.locale('zh-cn')
 
 const DEFAULT_TZ = 'Asia/Shanghai'
 dayjs.tz.setDefault(DEFAULT_TZ)
+
+export const setDayjsLocale = (locale) => {
+  const normalized = DAYJS_LOCALE_MAP[locale] || DAYJS_LOCALE_MAP['zh-CN']
+  dayjs.locale(normalized)
+}
+
+setDayjsLocale(resolveInitialLocale())
 
 const NUMERIC_REGEX = /^-?\d+(?:\.\d+)?$/
 

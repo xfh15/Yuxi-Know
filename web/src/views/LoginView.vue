@@ -2,14 +2,14 @@
   <div class="login-view" :class="{ 'has-alert': serverStatus === 'error' }">
     <!-- 服务状态提示 -->
     <div v-if="serverStatus === 'error'" class="server-status-alert">
-      <div class="alert-content">
-        <exclamation-circle-icon class="alert-icon" size="20" />
-        <div class="alert-text">
-          <div class="alert-title">服务端连接失败</div>
-          <div class="alert-message">{{ serverError }}</div>
-        </div>
+        <div class="alert-content">
+          <exclamation-circle-icon class="alert-icon" size="20" />
+          <div class="alert-text">
+            <div class="alert-title">{{ t('auth.serverConnectionFailed') }}</div>
+            <div class="alert-message">{{ serverError }}</div>
+          </div>
         <a-button type="link" size="small" @click="checkServerHealth" :loading="healthChecking">
-          重试
+          {{ t('common.retry') }}
         </a-button>
       </div>
     </div>
@@ -25,6 +25,7 @@
             <span class="brand-main">{{ brandName }}</span>
           </h1>
         </div>
+        <LanguageSwitcher variant="compact" />
       </div>
     </nav>
 
@@ -33,7 +34,7 @@
       <div class="login-card">
         <!-- 左侧图片 -->
         <div class="card-side is-image">
-          <img :src="loginBgImage" alt="登录背景" class="login-bg-image" />
+          <img :src="loginBgImage" :alt="t('auth.loginBackgroundAlt')" class="login-bg-image" />
         </div>
 
         <!-- 右侧表单 -->
@@ -41,8 +42,8 @@
           <div class="form-wrapper">
             <header class="form-header">
               <!-- 如果是在初始化，显示特定标题 -->
-              <h2 v-if="isFirstRun" class="init-title">系统初始化，请创建超级管理员</h2>
-              <p v-else class="welcome-text">欢迎登录</p>
+              <h2 v-if="isFirstRun" class="init-title">{{ t('auth.initTitle') }}</h2>
+              <p v-else class="welcome-text">{{ t('auth.welcomeLogin') }}</p>
             </header>
 
             <div class="login-content" :class="{ 'is-initializing': isFirstRun }">
@@ -73,7 +74,7 @@
                   </a-form-item>
 
                   <a-form-item
-                    label="手机号（可选）"
+                    :label="t('auth.phoneOptional')"
                     name="phone_number"
                     :rules="[
                       {
@@ -83,7 +84,7 @@
                           }
                           const phoneRegex = /^1[3-9]\d{9}$/
                           if (!phoneRegex.test(value)) {
-                            throw new Error('请输入正确的手机号格式')
+                            throw new Error(t('auth.phoneInvalid'))
                           }
                         }
                       }
@@ -91,13 +92,13 @@
                   >
                     <a-input
                       v-model:value="adminForm.phone_number"
-                      placeholder="可用于登录，可不填写"
+                      :placeholder="t('auth.phonePlaceholder')"
                       :max-length="11"
                     />
                   </a-form-item>
 
                   <a-form-item
-                    label="密码"
+                    :label="t('auth.password')"
                     name="password"
                     :rules="[
                       { required: true, message: '请输入密码' },
@@ -115,10 +116,10 @@
                   </a-form-item>
 
                   <a-form-item
-                    label="确认密码"
+                    :label="t('auth.confirmPassword')"
                     name="confirmPassword"
                     :rules="[
-                      { required: true, message: '请确认密码' },
+                      { required: true, message: t('auth.pleaseConfirmPassword') },
                       { validator: validateConfirmPassword }
                     ]"
                   >
@@ -131,14 +132,14 @@
                   <a-form-item v-if="showAgreementConsent" class="agreement-form-item">
                     <div class="agreement-row">
                       <a-checkbox v-model:checked="agreementAccepted">
-                        登录即代表同意
+                        {{ t('auth.agreePrefix') }}
                         <a
                           class="agreement-link"
                           :href="userAgreementUrl"
                           target="_blank"
                           rel="noopener noreferrer"
                           @click.stop
-                          >《用户协议》</a
+                          >{{ t('auth.userAgreement') }}</a
                         >
                         <a
                           class="agreement-link"
@@ -146,7 +147,7 @@
                           target="_blank"
                           rel="noopener noreferrer"
                           @click.stop
-                          >《隐私协议》</a
+                          >{{ t('auth.privacyPolicy') }}</a
                         >
                       </a-checkbox>
                     </div>
@@ -154,7 +155,7 @@
 
                   <a-form-item>
                     <a-button type="primary" html-type="submit" :loading="loading" block
-                      >创建管理员账户</a-button
+                      >{{ t('auth.createAdminAccount') }}</a-button
                     >
                   </a-form-item>
                 </a-form>
@@ -164,7 +165,7 @@
               <div v-else class="login-form">
                 <a-form :model="loginForm" @finish="handleLogin" layout="vertical">
                   <a-form-item
-                    label="登录账号"
+                    :label="t('auth.loginAccount')"
                     name="loginId"
                     :rules="[{ required: true, message: '请输入UID或手机号' }]"
                   >
@@ -176,9 +177,9 @@
                   </a-form-item>
 
                   <a-form-item
-                    label="密码"
+                    :label="t('auth.password')"
                     name="password"
-                    :rules="[{ required: true, message: '请输入密码' }]"
+                    :rules="[{ required: true, message: t('auth.passwordRequired') }]"
                   >
                     <a-input-password v-model:value="loginForm.password">
                       <template #prefix>
@@ -190,14 +191,14 @@
                   <a-form-item v-if="showAgreementConsent" class="agreement-form-item">
                     <div class="agreement-row">
                       <a-checkbox v-model:checked="agreementAccepted">
-                        登录即代表同意
+                        {{ t('auth.agreePrefix') }}
                         <a
                           class="agreement-link"
                           :href="userAgreementUrl"
                           target="_blank"
                           rel="noopener noreferrer"
                           @click.stop
-                          >《用户协议》</a
+                          >{{ t('auth.userAgreement') }}</a
                         >
                         <a
                           class="agreement-link"
@@ -205,7 +206,7 @@
                           target="_blank"
                           rel="noopener noreferrer"
                           @click.stop
-                          >《隐私协议》</a
+                          >{{ t('auth.privacyPolicy') }}</a
                         >
                       </a-checkbox>
                     </div>
@@ -220,8 +221,10 @@
                       block
                       size="large"
                     >
-                      <span v-if="isLocked">账户已锁定 {{ formatTime(lockRemainingTime) }}</span>
-                      <span v-else>登录</span>
+                      <span v-if="isLocked">
+                        {{ t('auth.lockedLabel', { time: formatTime(lockRemainingTime) }) }}
+                      </span>
+                      <span v-else>{{ t('common.login') }}</span>
                     </a-button>
                   </a-form-item>
                 </a-form>
@@ -229,7 +232,7 @@
                 <!-- OIDC 登录选项  -->
                 <div v-if="oidcChecking || oidcEnabled" class="third-party-login">
                   <div class="divider">
-                    <span>或使用以下方式登录</span>
+                    <span>{{ t('auth.orUseFollowing') }}</span>
                   </div>
                   <div class="login-icons">
                     <!-- 检查中显示骨架屏 -->
@@ -248,7 +251,7 @@
                       <template #icon>
                         <key-icon size="18" />
                       </template>
-                      {{ oidcButtonText }}
+                      {{ oidcButtonText || t('auth.oidcLogin') }}
                     </a-button>
                   </div>
                 </div>
@@ -267,12 +270,10 @@
     <!-- 页面底部：版权信息等 -->
     <footer class="page-footer">
       <div class="footer-links">
-        <a href="https://github.com/xerrors" target="_blank">联系我们</a>
-        <span class="divider">|</span>
-        <a href="https://github.com/xerrors/Yuxi" target="_blank">使用帮助</a>
+        <a href="https://github.com/xerrors" target="_blank">{{ t('common.contactUs') }}</a>
       </div>
       <div class="copyright">
-        &copy; {{ new Date().getFullYear() }} {{ brandName }}. All Rights Reserved.
+        &copy; {{ new Date().getFullYear() }} {{ brandName }}. {{ t('common.allRightsReserved') }}
       </div>
     </footer>
   </div>
@@ -281,12 +282,14 @@
 <script setup>
 import { ref, reactive, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useUserStore } from '@/stores/user'
 import { useInfoStore } from '@/stores/info'
 import { useAgentStore } from '@/stores/agent'
 import { message } from 'ant-design-vue'
 import { healthApi } from '@/apis/system_api'
 import { authApi } from '@/apis/auth_api'
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import {
   User as UserIcon,
   Lock as LockIcon,
@@ -298,6 +301,7 @@ import { MIN_PASSWORD_LENGTH } from '@/utils/passwordValidation'
 
 const router = useRouter()
 const route = useRoute()
+const { t } = useI18n()
 const userStore = useUserStore()
 const infoStore = useInfoStore()
 const agentStore = useAgentStore()
@@ -314,7 +318,7 @@ const brandOrgName = computed(() => {
 })
 const brandName = computed(() => {
   const orgName = brandOrgName.value
-  const brandNameRaw = infoStore.branding?.name?.trim() || 'Yuxi'
+  const brandNameRaw = infoStore.branding?.name?.trim() || 'Z-Agent'
 
   if (orgName && brandNameRaw && orgName !== brandNameRaw) {
     return brandNameRaw
@@ -345,7 +349,7 @@ const healthChecking = ref(false)
 const oidcEnabled = ref(false)
 const oidcLoading = ref(false)
 const oidcChecking = ref(true)
-const oidcButtonText = ref('OIDC 登录')
+const oidcButtonText = ref('')
 
 // 登录锁定相关状态
 const isLocked = ref(false)
@@ -367,7 +371,7 @@ const adminForm = reactive({
 })
 
 const goHome = () => {
-  router.push('/')
+  router.push('/login')
 }
 
 // 清理倒计时器
@@ -397,29 +401,29 @@ const startLockCountdown = (remainingSeconds) => {
 // 格式化时间显示
 const formatTime = (seconds) => {
   if (seconds < 60) {
-    return `${seconds}秒`
+    return t('common.duration.seconds', { count: seconds })
   } else if (seconds < 3600) {
     const minutes = Math.floor(seconds / 60)
     const remainingSeconds = seconds % 60
-    return `${minutes}分${remainingSeconds}秒`
+    return t('common.duration.minutesSeconds', { minutes, seconds: remainingSeconds })
   } else if (seconds < 86400) {
     const hours = Math.floor(seconds / 3600)
     const minutes = Math.floor((seconds % 3600) / 60)
-    return `${hours}小时${minutes}分钟`
+    return t('common.duration.hoursMinutes', { hours, minutes })
   } else {
     const days = Math.floor(seconds / 86400)
     const hours = Math.floor((seconds % 86400) / 3600)
-    return `${days}天${hours}小时`
+    return t('common.duration.daysHours', { days, hours })
   }
 }
 
 // 密码确认验证
 const validateConfirmPassword = async (rule, value) => {
   if (value === '') {
-    throw new Error('请确认密码')
+    throw new Error(t('auth.pleaseConfirmPassword'))
   }
   if (value !== adminForm.password) {
-    throw new Error('两次输入的密码不一致')
+    throw new Error(t('auth.createPasswordConfirm'))
   }
 }
 
@@ -428,7 +432,7 @@ const ensureAgreementAccepted = () => {
     return true
   }
 
-  const warningMessage = '请先阅读并同意《用户协议》《隐私协议》'
+  const warningMessage = t('auth.agreementRequired')
   message.warning(warningMessage)
   return false
 }
@@ -437,7 +441,7 @@ const ensureAgreementAccepted = () => {
 const handleLogin = async () => {
   // 如果当前被锁定，不允许登录
   if (isLocked.value) {
-    message.warning(`账户被锁定，请等待 ${formatTime(lockRemainingTime.value)}`)
+    message.warning(t('auth.accountLockedWait', { time: formatTime(lockRemainingTime.value) }))
     return
   }
 
@@ -455,7 +459,7 @@ const handleLogin = async () => {
       password: loginForm.password
     })
 
-    message.success('登录成功')
+    message.success(t('auth.loginSuccess'))
 
     // 获取重定向路径
     const redirectPath = sessionStorage.getItem('redirect') || '/'
@@ -491,7 +495,7 @@ const handleLogin = async () => {
 
       // 如果没有从头中获取到，尝试从错误消息中解析
       if (remainingTime === 0) {
-        const lockTimeMatch = error.message.match(/(\d+)\s*秒/)
+        const lockTimeMatch = error.message.match(/(\d+)/)
         if (lockTimeMatch) {
           remainingTime = parseInt(lockTimeMatch[1])
         }
@@ -499,12 +503,14 @@ const handleLogin = async () => {
 
       if (remainingTime > 0) {
         startLockCountdown(remainingTime)
-        errorMessage.value = `由于多次登录失败，账户已被锁定 ${formatTime(remainingTime)}`
+        errorMessage.value = t('auth.accountLockedForFailures', {
+          time: formatTime(remainingTime)
+        })
       } else {
-        errorMessage.value = error.message || '账户被锁定，请稍后再试'
+        errorMessage.value = error.message || t('auth.accountLockedRetryLater')
       }
     } else {
-      errorMessage.value = error.message || '登录失败，请检查用户名和密码'
+      errorMessage.value = error.message || t('auth.loginFailedRetry')
     }
   } finally {
     loading.value = false
@@ -532,11 +538,11 @@ const handleOIDCLogin = async () => {
       // 跳转到 OIDC Provider
       window.location.href = response.login_url
     } else {
-      errorMessage.value = '获取 OIDC 登录地址失败'
+      errorMessage.value = t('auth.getOidcLoginUrlFailed')
     }
   } catch (error) {
     console.error('OIDC 登录失败:', error)
-    errorMessage.value = error.message || 'OIDC 登录失败，请重试'
+    errorMessage.value = error.message || t('auth.oidcLoginFailedRetry')
   } finally {
     oidcLoading.value = false
   }
@@ -572,7 +578,7 @@ const handleInitialize = async () => {
     errorMessage.value = ''
 
     if (adminForm.password !== adminForm.confirmPassword) {
-      errorMessage.value = '两次输入的密码不一致'
+      errorMessage.value = t('auth.createPasswordConfirm')
       return
     }
 
@@ -582,11 +588,11 @@ const handleInitialize = async () => {
       phone_number: adminForm.phone_number || null // 空字符串转为null
     })
 
-    message.success('管理员账户创建成功')
-    router.push('/')
+    message.success(t('auth.adminCreated'))
+    router.push('/agent')
   } catch (error) {
     console.error('初始化失败:', error)
-    errorMessage.value = error.message || '初始化失败，请重试'
+    errorMessage.value = error.message || t('auth.initFailedRetry')
   } finally {
     loading.value = false
   }
@@ -600,7 +606,7 @@ const checkFirstRunStatus = async () => {
     isFirstRun.value = isFirst
   } catch (error) {
     console.error('检查首次运行状态失败:', error)
-    errorMessage.value = '系统出错，请稍后重试'
+    errorMessage.value = t('auth.systemErrorRetry')
   } finally {
     loading.value = false
   }
@@ -615,12 +621,12 @@ const checkServerHealth = async () => {
       serverStatus.value = 'ok'
     } else {
       serverStatus.value = 'error'
-      serverError.value = response.message || '服务端状态异常'
+      serverError.value = response.message || t('auth.serviceStatusError')
     }
   } catch (error) {
     console.error('检查服务器健康状态失败:', error)
     serverStatus.value = 'error'
-    serverError.value = error.message || '无法连接到服务端，请检查网络连接'
+    serverError.value = error.message || t('auth.serviceConnectError')
   } finally {
     healthChecking.value = false
   }

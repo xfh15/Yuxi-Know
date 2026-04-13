@@ -75,12 +75,12 @@
       <!-- 错误提示块 -->
       <div v-if="displayError" class="error-hint">
         <span v-if="getErrorMessage">{{ getErrorMessage }}</span>
-        <span v-else-if="message.error_type === 'interrupted'">回答生成已中断</span>
-        <span v-else-if="message.error_type === 'unexpect'">生成过程中出现异常</span>
+        <span v-else-if="message.error_type === 'interrupted'">回答の生成が中断されました</span>
+        <span v-else-if="message.error_type === 'unexpect'">生成中にエラーが発生しました</span>
         <span v-else-if="message.error_type === 'content_guard_blocked'"
-          >检测到敏感内容，已中断输出</span
+          >センシティブな内容を検出したため、出力を中断しました</span
         >
-        <span v-else>{{ message.error_type || '未知错误' }}</span>
+        <span v-else>{{ message.error_type || '不明なエラー' }}</span>
       </div>
 
       <ToolCallsGroupComponent
@@ -89,9 +89,9 @@
       />
 
       <div v-if="message.isStoppedByUser" class="retry-hint">
-        你停止生成了本次回答
+        この回答の生成を停止しました
         <span class="retry-link" @click="emit('retryStoppedMessage', message.id)"
-          >重新编辑问题</span
+          >質問を再編集</span
         >
       </div>
 
@@ -297,13 +297,13 @@ const getErrorMessage = computed(() => {
   // 对于已知的错误类型，返回默认提示
   switch (props.message.error_type) {
     case 'interrupted':
-      return '回答生成已中断'
+      return '回答の生成が中断されました'
     case 'content_guard_blocked':
-      return '检测到敏感内容，已中断输出'
+      return 'センシティブな内容を検出したため、出力を中断しました'
     case 'unexpect':
-      return '生成过程中出现异常'
+      return '生成中にエラーが発生しました'
     case 'agent_error':
-      return '智能体获取失败'
+      return 'エージェントの取得に失敗しました'
     default:
       return null
   }

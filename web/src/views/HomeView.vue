@@ -3,15 +3,17 @@
     <!-- 加载中状态 -->
     <div v-if="isLoading" class="loading-container">
       <a-spin size="large" />
-      <p class="loading-text">正在连接服务...</p>
+      <p class="loading-text">{{ t('home.connectingService') }}</p>
     </div>
 
     <!-- 错误状态 -->
     <div v-else-if="error" class="error-container">
       <a-result status="error" :title="error.title" :sub-title="error.message">
         <template #extra>
-          <a-button type="primary" @click="retryLoad">重试</a-button>
-          <a-button :href="faqUrl" target="_blank" rel="noopener noreferrer">常见问题</a-button>
+          <a-button type="primary" @click="retryLoad">{{ t('common.retry') }}</a-button>
+          <a-button :href="faqUrl" target="_blank" rel="noopener noreferrer">
+            {{ t('home.faq') }}
+          </a-button>
         </template>
       </a-result>
     </div>
@@ -206,9 +208,11 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useUserStore } from '@/stores/user'
 import { useInfoStore } from '@/stores/info'
 import { healthApi } from '@/apis/system_api'
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import UserInfoComponent from '@/components/UserInfoComponent.vue'
 import {
   BookText,
@@ -222,6 +226,7 @@ import {
 } from 'lucide-vue-next'
 
 const router = useRouter()
+const { t } = useI18n()
 const userStore = useUserStore()
 const infoStore = useInfoStore()
 const repoUrl = 'https://github.com/xerrors/Yuxi'
@@ -377,12 +382,12 @@ const checkHealth = async () => {
   try {
     const response = await healthApi.checkHealth()
     if (response.status !== 'ok') {
-      throw new Error('服务不可用')
+      throw new Error(t('home.serviceUnavailable'))
     }
   } catch (e) {
     error.value = {
-      title: '服务连接失败',
-      message: '后端服务无法响应，请检查服务是否正常运行'
+      title: t('home.serviceConnectionFailed'),
+      message: t('home.backendUnavailable')
     }
     throw e
   }
@@ -402,7 +407,7 @@ const loadData = async () => {
     githubStats.value = repo
     startBadgeTyping(repo?.stars ?? null)
   } catch (e) {
-    console.error('加载失败:', e)
+    console.error(t('home.loadFailed'), e)
     stopBadgeTyping()
     stopSubtitleCarousel()
     stopStarsFetch()

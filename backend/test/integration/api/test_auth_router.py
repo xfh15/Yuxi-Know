@@ -101,6 +101,27 @@ async def test_user_is_locked_after_repeated_failed_logins(test_client, standard
     assert "登录被锁定" in still_locked_response.json()["detail"]
 
 
+async def test_auth_errors_follow_requested_locale(test_client, standard_user):
+    user_id = standard_user["user"]["user_id"]
+
+    for _ in range(4):
+        response = await test_client.post(
+            "/api/auth/token",
+            data={"username": user_id, "password": "wrong-password"},
+            headers={"X-Yuxi-Locale": "en-US"},
+        )
+        assert response.status_code == 401
+        assert response.json()["detail"] == "Incorrect username or password"
+
+    locked_response = await test_client.post(
+        "/api/auth/token",
+        data={"username": user_id, "password": "wrong-password"},
+        headers={"X-Yuxi-Locale": "ja-JP"},
+    )
+    assert locked_response.status_code == 423
+    assert "ロック" in locked_response.json()["detail"]
+
+
 async def test_admin_can_login_and_fetch_profile(test_client, admin_headers):
     profile_response = await test_client.get("/api/auth/me", headers=admin_headers)
     assert profile_response.status_code == 200

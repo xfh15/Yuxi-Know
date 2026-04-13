@@ -338,7 +338,7 @@ const getFileName = (fileItem) => {
   if (fileItem?.path) {
     return String(fileItem.path).split('/').pop() || String(fileItem.path)
   }
-  return '未知文件'
+  return '不明なファイル'
 }
 
 const loadDirectoryChildren = async (directoryPath) => {
@@ -373,7 +373,7 @@ const refreshFileSystem = async () => {
     }
   } catch (error) {
     dynamicTreeData.value = []
-    filesystemError.value = error?.message || '加载文件系统失败'
+    filesystemError.value = error?.message || 'ファイルシステムの読み込みに失敗しました'
     console.error('Failed to load root files', error)
   } finally {
     loadingFiles.value = false
@@ -449,7 +449,7 @@ const loadActivePreview = async () => {
       content: `Error loading file: ${error?.message || 'unknown error'}`,
       supported: false,
       previewType: 'unsupported',
-      message: error?.message || '文件预览失败',
+      message: error?.message || 'ファイルのプレビューに失敗しました',
       previewUrl: ''
     }
   }
@@ -483,11 +483,11 @@ const confirmDeleteNode = (node) => {
   const fileName = node?.title || getFileName(node?.fileData)
   const isDirectory = !node?.isLeaf
   Modal.confirm({
-    title: isDirectory ? `确认删除文件夹「${fileName}」？` : `确认删除文件「${fileName}」？`,
-    content: isDirectory ? '将删除该文件夹及其所有内容，删除后不可恢复。' : '删除后不可恢复。',
-    okText: '删除',
+    title: isDirectory ? `フォルダ「${fileName}」を削除しますか？` : `ファイル「${fileName}」を削除しますか？`,
+    content: isDirectory ? 'このフォルダと中身はすべて削除され、元に戻せません。' : '削除すると元に戻せません。',
+    okText: '削除',
     okType: 'danger',
-    cancelText: '取消',
+    cancelText: 'キャンセル',
     onOk: async () => {
       const nextDeletingPaths = new Set(deletingPaths.value)
       nextDeletingPaths.add(node.key)
@@ -497,10 +497,10 @@ const confirmDeleteNode = (node) => {
         await deleteViewerFile(props.threadId, node.key)
         dynamicTreeData.value = removeTreeNode(dynamicTreeData.value, node.key)
         pruneTreeStateAfterDelete(node.key)
-        message.success(isDirectory ? '文件夹删除成功' : '文件删除成功')
+        message.success(isDirectory ? 'フォルダを削除しました' : 'ファイルを削除しました')
       } catch (error) {
-        console.error(isDirectory ? '删除文件夹失败:' : '删除文件失败:', error)
-        message.error(error?.message || (isDirectory ? '删除文件夹失败' : '删除文件失败'))
+        console.error(isDirectory ? 'Failed to delete folder:' : 'Failed to delete file:', error)
+        message.error(error?.message || (isDirectory ? 'フォルダの削除に失敗しました' : 'ファイルの削除に失敗しました'))
       } finally {
         const latestDeletingPaths = new Set(deletingPaths.value)
         latestDeletingPaths.delete(node.key)
@@ -528,7 +528,7 @@ const downloadFile = async (fileItem) => {
     document.body.removeChild(link)
     window.URL.revokeObjectURL(url)
   } catch (error) {
-    console.error('下载文件失败:', error)
+    console.error('Failed to download file:', error)
   }
 }
 

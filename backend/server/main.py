@@ -12,6 +12,7 @@ if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 import time
+import json
 from collections import defaultdict, deque
 
 import uvicorn
@@ -24,6 +25,7 @@ from server.routers import router
 from server.utils.lifespan import lifespan
 from server.utils.common_utils import setup_logging
 from server.utils.access_log_middleware import AccessLogMiddleware
+from yuxi.i18n import resolve_locale, translate_payload
 
 # 设置日志配置
 setup_logging()
@@ -128,11 +130,57 @@ class LoginRateLimitMiddleware(BaseHTTPMiddleware):
         return await call_next(request)
 
 
+class LocaleMiddleware(BaseHTTPMiddleware):
+    """根据请求语言设置翻译普通 JSON 响应，不干扰 SSE 与文件响应。"""
+
+    async def dispatch(self, request: Request, call_next):
+        request.state.locale = resolve_locale(
+            request.headers.get("X-Yuxi-Locale"),
+            request.headers.get("Accept-Language"),
+        )
+        response = await call_next(request)
+        return await self._translate_response(request, response)
+
+    async def _translate_response(self, request: Request, response):
+        content_type = response.headers.get("content-type", "")
+        if "application/json" not in content_type.lower():
+            return response
+
+        body = b""
+        if getattr(response, "body", None) is not None:
+            body = response.body
+        else:
+            async for chunk in response.body_iterator:
+                body += chunk
+
+        if not body:
+            return response
+
+        try:
+            payload = json.loads(body)
+        except json.JSONDecodeError:
+            return response
+
+        translated_payload = translate_payload(request.state.locale, payload)
+        if translated_payload == payload and getattr(response, "body", None) is not None:
+            return response
+
+        headers = {key: value for key, value in response.headers.items() if key.lower() != "content-length"}
+        return JSONResponse(
+            content=translated_payload,
+            status_code=response.status_code,
+            headers=headers,
+            media_type=response.media_type,
+            background=response.background,
+        )
+
+
 # 添加访问日志中间件（记录请求处理时间）
 app.add_middleware(AccessLogMiddleware)
 
 # 添加登录限流中间件
 app.add_middleware(LoginRateLimitMiddleware)
+app.add_middleware(LocaleMiddleware)
 
 if __name__ == "__main__":
     # uvicorn.run(app, host="0.0.0.0", port=5050, threads=10, workers=10, reload=True)

@@ -89,11 +89,14 @@ const { openSettingsModal } = inject('settingsModal', {})
 const currentTime = ref('')
 
 // 计算属性
-const branding = computed(() => infoStore.branding)
+const branding = computed(() => ({
+  ...infoStore.branding,
+  name: infoStore.branding?.name || 'Z-Agent'
+}))
 
 // 用户名计算属性
 const currentUser = computed(() => {
-  return userStore.username || '游客'
+  return userStore.username || 'ゲスト'
 })
 
 // 问候语计算属性
@@ -102,18 +105,18 @@ const greeting = computed(() => {
   let greetingText
 
   if (hour >= 5 && hour < 12) {
-    greetingText = '早上好'
+    greetingText = 'おはようございます'
   } else if (hour >= 12 && hour < 14) {
-    greetingText = '中午好'
+    greetingText = 'こんにちは'
   } else if (hour >= 14 && hour < 18) {
-    greetingText = '下午好'
+    greetingText = 'こんにちは'
   } else if (hour >= 18 && hour < 22) {
-    greetingText = '晚上好'
+    greetingText = 'こんばんは'
   } else {
-    greetingText = '夜深了'
+    greetingText = '遅い時間です'
   }
 
-  return `${greetingText}！${currentUser.value}`
+  return `${greetingText}、${currentUser.value}`
 })
 
 const activeTaskCount = computed(() => activeCountRef.value || 0)
@@ -133,7 +136,7 @@ const toggleTheme = () => {
 // 更新时间
 const updateTime = () => {
   const now = dayjs().tz('Asia/Shanghai')
-  currentTime.value = now.format('YYYY年MM月DD日 HH:mm:ss')
+  currentTime.value = now.format('YYYY/MM/DD HH:mm:ss')
 }
 
 // 定时器
@@ -147,7 +150,7 @@ onMounted(async () => {
   try {
     await userStore.getCurrentUser()
   } catch (error) {
-    console.error('获取用户信息失败:', error)
+    console.error('Failed to get current user:', error)
   }
 })
 

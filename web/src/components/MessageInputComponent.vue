@@ -64,9 +64,9 @@
       <div class="mention-popup" @mousedown.prevent>
         <!-- 文件列表 -->
         <div v-if="mentionItems.files.length > 0 || showFileSearchPrompt" class="mention-group">
-          <div class="mention-group-title">文件</div>
+          <div class="mention-group-title">ファイル</div>
           <div v-if="showFileSearchPrompt" class="mention-search-placeholder">
-            输入相关内容以搜索文件
+            関連キーワードを入力してファイルを検索
           </div>
           <template v-else>
             <div
@@ -112,7 +112,7 @@
 
         <!-- 知识库列表 -->
         <div v-if="mentionItems.knowledgeBases.length > 0" class="mention-group">
-          <div class="mention-group-title">知识库</div>
+          <div class="mention-group-title">ナレッジベース</div>
           <div
             v-for="(item, index) in mentionItems.knowledgeBases"
             :key="'kb-' + item.value"
@@ -259,13 +259,13 @@
         </div>
 
         <!-- 无结果 -->
-        <div v-if="!hasAnyItems" class="mention-empty">暂无可引用的项</div>
+        <div v-if="!hasAnyItems" class="mention-empty">参照できる項目はありません</div>
       </div>
     </div>
 
     <div class="send-button-container">
       <slot name="actions-right"></slot>
-      <a-tooltip :title="isLoading ? '停止回答' : ''">
+      <a-tooltip :title="isLoading ? '回答を停止' : ''">
         <a-button
           @click="handleSendOrStop"
           :disabled="sendButtonDisabled"
@@ -341,7 +341,7 @@ const props = defineProps({
   },
   placeholder: {
     type: String,
-    default: '输入问题...'
+    default: '質問を入力...'
   },
   isLoading: {
     type: Boolean,

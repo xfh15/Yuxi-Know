@@ -112,20 +112,20 @@ const loadAllStats = async () => {
       agents: response.agents
     }
 
-    console.log('Dashboard 数据加载完成:', response)
-    message.success('数据加载成功')
+    console.log('Dashboard data loaded:', response)
+    message.success('データを読み込みました')
   } catch (error) {
-    console.error('加载统计数据失败:', error)
-    message.error('加载统计数据失败')
+    console.error('Failed to load dashboard stats:', error)
+    message.error('統計データの読み込みに失敗しました')
 
     // 如果并行请求失败，尝试单独加载基础数据
     try {
       const basicResponse = await dashboardApi.getStats()
       basicStats.value = basicResponse
-      message.warning('详细数据加载失败，仅显示基础统计')
+      message.warning('詳細データの読み込みに失敗したため、基本統計のみ表示します')
     } catch (basicError) {
-      console.error('加载基础统计数据也失败:', basicError)
-      message.error('无法加载任何统计数据')
+      console.error('Failed to load basic dashboard stats:', basicError)
+      message.error('統計データを読み込めませんでした')
     }
   } finally {
     loading.value = false

@@ -11,8 +11,10 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   MessageCirclePlus,
-  Search
+  Search,
+  Languages
 } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
 
 import { useConfigStore } from '@/stores/config'
 import { useAgentStore } from '@/stores/agent'
@@ -29,7 +31,9 @@ import TaskCenterDrawer from '@/components/TaskCenterDrawer.vue'
 import SettingsModal from '@/components/SettingsModal.vue'
 import ConversationNavSection from '@/components/ConversationNavSection.vue'
 import ConversationSearchModal from '@/components/ConversationSearchModal.vue'
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 
+const { t } = useI18n()
 const configStore = useConfigStore()
 const agentStore = useAgentStore()
 const chatThreadsStore = useChatThreadsStore()
@@ -42,10 +46,6 @@ const { activeCount: activeCountRef, isDrawerOpen } = storeToRefs(taskerStore)
 const { threads, currentThreadId, hasMoreThreads, isLoadingMoreThreads } =
   storeToRefs(chatThreadsStore)
 
-// Add state for GitHub stars
-const githubStars = ref(0)
-const isLoadingStars = ref(false)
-
 // Add state for debug modal
 const showDebugModal = ref(false)
 
@@ -55,6 +55,11 @@ const settingsInitialTab = ref('')
 
 const { sidebarCollapsed } = storeToRefs(chatUIStore)
 const conversationSearchOpen = ref(false)
+const languagePopoverOpen = ref(false)
+
+// 保留上游侧栏的 GitHub 信息，同时把语言切换作为独立入口接入新版布局。
+const githubStars = ref(0)
+const isLoadingStars = ref(false)
 
 // Provide settings modal methods to child components
 const openSettingsModal = (tab) => {
@@ -83,11 +88,9 @@ const getRemoteDatabase = async () => {
   }
 }
 
-// Fetch GitHub stars count
 const fetchGithubStars = async () => {
   try {
     isLoadingStars.value = true
-    // 公共API，可以直接使用fetch
     const response = await fetch('https://api.github.com/repos/xerrors/Yuxi')
     const data = await response.json()
     githubStars.value = data.stargazers_count
@@ -106,7 +109,7 @@ onMounted(async () => {
   // 仅管理员加载任务中心数据
   if (userStore.isAdmin) {
     taskerStore.loadTasks()
-    fetchGithubStars() // Fetch GitHub stars on mount
+    fetchGithubStars()
   }
 })
 
@@ -373,6 +376,28 @@ provide('settingsModal', {
         />
       </div>
       <div class="foo">
+        <div class="nav-item locale-switcher-nav" :class="{ active: languagePopoverOpen }">
+          <a-popover
+            v-model:open="languagePopoverOpen"
+            trigger="click"
+            placement="rightTop"
+            overlay-class-name="sidebar-locale-popover"
+          >
+            <template #content>
+              <div class="locale-popover-content">
+                <div class="locale-popover-title">{{ t('common.language') }}</div>
+                <LanguageSwitcher variant="compact" />
+              </div>
+            </template>
+            <a-tooltip placement="right" :open="sidebarCollapsed ? undefined : false">
+              <template #title>{{ t('common.language') }}</template>
+              <button type="button" class="locale-trigger" :aria-label="t('common.language')">
+                <Languages class="icon" size="18" />
+                <span class="nav-text">{{ t('common.language') }}</span>
+              </button>
+            </a-tooltip>
+          </a-popover>
+        </div>
         <div class="github nav-item" @click.stop>
           <a-tooltip placement="right" :open="sidebarCollapsed ? undefined : false">
             <template #title>欢迎 Star</template>
@@ -430,7 +455,7 @@ provide('settingsModal', {
     <!-- Debug Modal -->
     <a-modal
       v-model:open="showDebugModal"
-      title="调试面板"
+      :title="t('common.debugPanel')"
       width="90%"
       :footer="null"
       @cancel="handleDebugModalClose"
@@ -732,6 +757,18 @@ div.header,
           font-weight: 600;
         }
       }
+    }
+
+    .locale-trigger {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
     }
 
     &.api-docs {

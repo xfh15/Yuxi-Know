@@ -62,7 +62,9 @@
         </a-menu>
       </template>
     </a-dropdown>
-    <a-button v-else-if="showButton" type="primary" @click="goToLogin"> 登录 </a-button>
+    <a-button v-else-if="showButton" type="primary" @click="goToLogin">
+      {{ t('common.login') }}
+    </a-button>
 
     <!-- 调试面板 Modal -->
     <DebugComponent v-model:show="showDebug" />
@@ -72,6 +74,7 @@
 <script setup>
 import { computed, ref, inject, useSlots } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useUserStore } from '@/stores/user'
 import DebugComponent from '@/components/DebugComponent.vue'
 import { message } from 'ant-design-vue'
@@ -81,6 +84,7 @@ import { generatePixelAvatar } from '@/utils/pixelAvatar'
 import FallbackAvatar from '@/components/common/FallbackAvatar.vue'
 
 const router = useRouter()
+const { t } = useI18n()
 const userStore = useUserStore()
 const themeStore = useThemeStore()
 const slots = useSlots()
@@ -108,20 +112,24 @@ defineProps({
 const userRoleText = computed(() => {
   switch (userStore.userRole) {
     case 'superadmin':
-      return '超级管理员'
+      return t('user.superadmin')
     case 'admin':
-      return '管理员'
+      return t('user.admin')
     case 'user':
-      return '普通用户'
+      return t('user.user')
     default:
-      return '未知角色'
+      return t('user.unknownRole')
   }
 })
+
+const themeSwitchLabel = computed(() =>
+  themeStore.isDark ? t('common.lightMode') : t('common.darkMode')
+)
 
 // 退出登录
 const logout = () => {
   userStore.logout()
-  message.success('已退出登录')
+  message.success(t('common.loggedOutSuccess'))
   // 跳转到首页
   router.push('/login')
 }
@@ -249,6 +257,10 @@ const openProfile = () => {
 
 .user-info-display {
   line-height: 1.4;
+}
+
+.user-menu-overlay {
+  min-width: 220px;
 }
 
 .user-menu-username {

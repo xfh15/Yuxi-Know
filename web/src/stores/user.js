@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { translate } from '@/i18n'
 import { useAgentStore } from './agent'
 
 export const useUserStore = defineStore('user', () => {
@@ -37,13 +38,13 @@ export const useUserStore = defineStore('user', () => {
 
         // 如果是423锁定状态码，抛出包含状态码的错误
         if (response.status === 423) {
-          const lockError = new Error(error.detail || '账户被锁定')
+          const lockError = new Error(error.detail || translate('auth.accountLockedRetryLater'))
           lockError.status = 423
           lockError.headers = response.headers
           throw lockError
         }
 
-        throw new Error(error.detail || '登录失败')
+        throw new Error(error.detail || translate('auth.loginFailed'))
       }
 
       const data = await response.json()
@@ -101,7 +102,7 @@ export const useUserStore = defineStore('user', () => {
 
       if (!response.ok) {
         const error = await response.json()
-        throw new Error(error.detail || '初始化管理员失败')
+        throw new Error(error.detail || translate('auth.initFailedRetry'))
       }
 
       const data = await response.json()
@@ -196,7 +197,7 @@ export const useUserStore = defineStore('user', () => {
 
       if (!response.ok) {
         const error = await response.json()
-        throw new Error(error.detail || '创建用户失败')
+        throw new Error(error.detail || translate('user.createUserFailed'))
       }
 
       return await response.json()
@@ -219,7 +220,7 @@ export const useUserStore = defineStore('user', () => {
 
       if (!response.ok) {
         const error = await response.json()
-        throw new Error(error.detail || '更新用户失败')
+        throw new Error(error.detail || translate('user.updateUserFailed'))
       }
 
       return await response.json()
@@ -240,7 +241,7 @@ export const useUserStore = defineStore('user', () => {
 
       if (!response.ok) {
         const error = await response.json()
-        throw new Error(error.detail || '删除用户失败')
+        throw new Error(error.detail || translate('user.deleteUserFailed'))
       }
 
       return await response.json()
@@ -264,7 +265,7 @@ export const useUserStore = defineStore('user', () => {
 
       if (!response.ok) {
         const error = await response.json()
-        throw new Error(error.detail || '用户名验证失败')
+        throw new Error(error.detail || translate('user.validateUsernameFailed'))
       }
 
       return await response.json()
@@ -290,7 +291,7 @@ export const useUserStore = defineStore('user', () => {
 
       if (!response.ok) {
         const error = await response.json()
-        throw new Error(error.detail || '头像上传失败')
+        throw new Error(error.detail || translate('user.avatarUploadFailedFallback'))
       }
 
       const data = await response.json()
@@ -315,7 +316,7 @@ export const useUserStore = defineStore('user', () => {
       })
 
       if (!response.ok) {
-        throw new Error('获取用户信息失败')
+        throw new Error(translate('user.fetchCurrentUserFailed'))
       }
 
       const userData = await response.json()
@@ -351,7 +352,7 @@ export const useUserStore = defineStore('user', () => {
 
       if (!response.ok) {
         const error = await response.json()
-        throw new Error(error.detail || '更新个人资料失败')
+        throw new Error(error.detail || translate('user.updateProfileFailedFallback'))
       }
 
       const userData = await response.json()
@@ -409,7 +410,7 @@ export const useUserStore = defineStore('user', () => {
 export const checkAdminPermission = () => {
   const userStore = useUserStore()
   if (!userStore.isAdmin) {
-    throw new Error('需要管理员权限')
+    throw new Error(translate('errors.permissionDenied'))
   }
   return true
 }

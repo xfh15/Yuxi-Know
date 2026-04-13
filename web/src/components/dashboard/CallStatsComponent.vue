@@ -1,6 +1,6 @@
 <template>
   <div class="grid-item call-stats">
-    <a-card class="dashboard-card call-stats-section" title="调用统计" :loading="loading">
+    <a-card class="dashboard-card call-stats-section" title="呼び出し統計" :loading="loading">
       <template #extra>
         <div class="simple-controls">
           <div class="simple-toggle-group">
@@ -64,15 +64,15 @@ const callStatsLoading = ref(false)
 const callTimeRange = ref('14days')
 const callDataType = ref('agents')
 const timeRangeOptions = [
-  { value: '14hours', label: '近14小时' },
-  { value: '14days', label: '近14天' },
-  { value: '14weeks', label: '近14周' }
+  { value: '14hours', label: '直近14時間' },
+  { value: '14days', label: '直近14日' },
+  { value: '14weeks', label: '直近14週' }
 ]
 const dataTypeOptions = [
-  { value: 'models', label: '模型调用' },
-  { value: 'agents', label: '智能体调用' },
-  { value: 'tokens', label: 'Token消耗' },
-  { value: 'tools', label: '工具调用' }
+  { value: 'models', label: 'モデル呼び出し' },
+  { value: 'agents', label: 'エージェント呼び出し' },
+  { value: 'tokens', label: 'Token消費' },
+  { value: 'tools', label: 'ツール呼び出し' }
 ]
 const isTokenView = computed(() => callDataType.value === 'tokens')
 
@@ -122,7 +122,7 @@ const loadCallStats = async () => {
     await nextTick()
     renderCallStatsChart()
   } catch (error) {
-    console.error('加载调用统计数据失败:', error)
+    console.error('Failed to load call stats:', error)
   } finally {
     callStatsLoading.value = false
   }
@@ -165,7 +165,7 @@ const renderCallStatsChart = () => {
     if (callTimeRange.value === '14hours') {
       return date.split(' ')[1]
     } else if (callTimeRange.value === '14weeks') {
-      return `第${date.split('-')[1]}周`
+      return `${date.split('-')[1]}週目`
     } else {
       return date.split('-').slice(1).join('-')
     }
@@ -237,13 +237,13 @@ const renderCallStatsChart = () => {
           result += `<span style="${itemStyle}">${truncatedName}: ${formatValueForDisplay(param.value)}</span><br/>`
         })
         const labelMap = {
-          models: '模型调用',
-          agents: '智能体调用',
-          tokens: 'Token消耗',
-          tools: '工具调用'
+          models: 'モデル呼び出し',
+          agents: 'エージェント呼び出し',
+          tokens: 'Token消費',
+          tools: 'ツール呼び出し'
         }
         const formattedTotal = formatValueForDisplay(total)
-        return `<div style="font-weight:bold;margin-bottom:5px">${labelMap[callDataType.value]}</div>${result}<strong>总计: ${formattedTotal}</strong>`
+        return `<div style="font-weight:bold;margin-bottom:5px">${labelMap[callDataType.value]}</div>${result}<strong>合計: ${formattedTotal}</strong>`
       }
     },
     legend: {

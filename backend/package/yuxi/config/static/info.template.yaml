@@ -10,11 +10,11 @@ organization:
 
 # 项目信息
 branding:
-  name: "Yuxi"
-  title: "让智能体可构建、可编排、可落地"     # 系统标题
-  subtitle: "开源智能体平台套件，融合 RAG 与知识图谱"          # 副标题（subtitles 为空时使用）
+  name: "Z-Agent"
+  title: "AIは、構築、編成、実用化が可能"     # 系统标题
+  subtitle: "RAGと知識グラフを統合したもの"          # 副标题（subtitles 为空时使用）
   subtitles:
-    - "开源智能体平台套件，融合 RAG 与知识图谱"
+    - "RAGと知識グラフを統合したもの"
     - "统一编排 Agent、知识库、图谱与工具链"
     - "让智能体可构建，让知识可连接，让决策可验证"
     - "让智能体可落地，让流程可编排，让协作可扩展"

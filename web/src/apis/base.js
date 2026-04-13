@@ -1,5 +1,6 @@
 import { useUserStore, checkAdminPermission, checkSuperAdminPermission } from '@/stores/user'
 import { message } from 'ant-design-vue'
+import { translate } from '@/i18n'
 
 /**
  * 基础API请求封装
@@ -30,7 +31,7 @@ export async function apiRequest(url, options = {}, requiresAuth = true, respons
     if (requiresAuth) {
       const userStore = useUserStore()
       if (!userStore.isLoggedIn) {
-        throw new Error('用户未登录')
+        throw new Error(translate('errors.userNotLoggedIn'))
       }
 
       Object.assign(requestOptions.headers, userStore.getAuthHeaders())
@@ -95,7 +96,9 @@ export async function apiRequest(url, options = {}, requiresAuth = true, respons
         const isTokenExpired =
           errorMessage?.includes('令牌已过期') || errorMessage?.includes('token expired')
 
-        message.error(isTokenExpired ? '登录已过期，请重新登录' : '认证失败，请重新登录')
+        message.error(
+          isTokenExpired ? translate('errors.loginExpired') : translate('errors.authFailedRelogin')
+        )
 
         // 如果用户当前认为自己已登录，则登出
         if (userStore.isLoggedIn) {
@@ -109,10 +112,10 @@ export async function apiRequest(url, options = {}, requiresAuth = true, respons
 
         throw error
       } else if (response.status === 403) {
-        error.message = '没有权限执行此操作'
+        error.message = translate('errors.permissionDenied')
         throw error
       } else if (response.status === 500) {
-        error.message = '服务器内部错误，请使用 docker logs api-dev 查看详细日志'
+        error.message = translate('errors.serverInternalLogs')
         throw error
       }
 
