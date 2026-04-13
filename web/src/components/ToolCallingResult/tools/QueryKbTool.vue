@@ -18,13 +18,17 @@
 
         <div v-if="hasGraphData(parsedResult(resultContent))" class="graph-result-card">
           <div class="graph-summary">
-            图谱检索: 实体 {{ parsedResult(resultContent).entities.length }} 个, 关系
-            {{ parsedResult(resultContent).relationships.length }} 条, 引用
-            {{ parsedResult(resultContent).references.length }} 条
+            {{
+              t('toolCalls.queryKb.graphSummary', {
+                entities: parsedResult(resultContent).entities.length,
+                relationships: parsedResult(resultContent).relationships.length,
+                references: parsedResult(resultContent).references.length
+              })
+            }}
           </div>
 
           <div v-if="parsedResult(resultContent).entities.length > 0" class="graph-section">
-            <div class="section-title">实体</div>
+            <div class="section-title">{{ t('toolCalls.queryKb.entities') }}</div>
             <div class="entity-list">
               <div
                 v-for="(entity, index) in parsedResult(resultContent).entities"
@@ -43,7 +47,7 @@
           </div>
 
           <div v-if="parsedResult(resultContent).relationships.length > 0" class="graph-section">
-            <div class="section-title">关系</div>
+            <div class="section-title">{{ t('toolCalls.queryKb.relationships') }}</div>
             <div class="relation-list">
               <div
                 v-for="(relation, index) in parsedResult(resultContent).relationships"
@@ -53,13 +57,15 @@
                 <span class="relation-node">{{ relation?.src_id || '-' }}</span>
                 <span class="relation-arrow">→</span>
                 <span class="relation-node">{{ relation?.tgt_id || '-' }}</span>
-                <span class="relation-keywords">{{ relation?.keywords || '关联' }}</span>
+                <span class="relation-keywords">{{
+                  relation?.keywords || t('toolCalls.queryKb.related')
+                }}</span>
               </div>
             </div>
           </div>
 
           <div v-if="parsedResult(resultContent).references.length > 0" class="graph-section">
-            <div class="section-title">引用</div>
+            <div class="section-title">{{ t('toolCalls.queryKb.references') }}</div>
             <div class="reference-list">
               <a
                 v-for="(reference, index) in parsedResult(resultContent).references"
@@ -82,7 +88,7 @@
           "
           class="no-results"
         >
-          未找到相关知识库内容
+          {{ t('toolCalls.queryKb.empty') }}
         </div>
       </div>
     </template>
@@ -91,6 +97,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import BaseToolCall from '../BaseToolCall.vue'
 import KbResultGroupedList from '@/components/sources/KbResultGroupedList.vue'
 import { useDatabaseStore } from '@/stores/database'
@@ -115,9 +122,7 @@ const args = computed(() => {
   }
 })
 
-const toolName = computed(() => props.toolCall.name || props.toolCall.function?.name || '知识库')
-
-const operationLabel = computed(() => `${toolName.value} 搜索`)
+const operationLabel = computed(() => t('toolCalls.labels.knowledgeBaseSearch'))
 
 const resourceLabel = computed(
   () => args.value.kb_name || databaseStore.getDatabaseNameById(args.value.kb_id)
@@ -180,8 +185,10 @@ const parsedResult = (content) => parseResult(content)
 const hasGraphData = (result) =>
   result.entities.length > 0 || result.relationships.length > 0 || result.references.length > 0
 
-const getEntityName = (entity) => entity?.entity_name || entity?.name || '未命名实体'
-const getEntityType = (entity) => entity?.entity_type || entity?.type || '未分类'
+const getEntityName = (entity) =>
+  entity?.entity_name || entity?.name || t('toolCalls.queryKb.unnamedEntity')
+const getEntityType = (entity) =>
+  entity?.entity_type || entity?.type || t('toolCalls.queryKb.uncategorized')
 
 const getPreviewText = (text = '', maxLength = 100) => {
   const normalized = String(text)

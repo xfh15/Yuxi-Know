@@ -153,5 +153,84 @@ export default {
       streamProcessing: 'Stream processing',
       inputValidation: 'Input validation'
     }
+  },
+  toolCalls: {
+    summary: {
+      single: 'Used tool: {tool}',
+      multiple: 'Called {count} tools'
+    },
+    status: {
+      completed: 'Completed',
+      failedCount: '{count} failed',
+      runningCount: '{count} running'
+    },
+    base: {
+      success: 'Tool {tool} completed',
+      error: 'Tool {tool} failed',
+      running: 'Calling tool: {tool}',
+      params: 'Parameters'
+    },
+    labels: {
+      knowledgeBase: 'Knowledge base',
+      knowledgeBaseList: 'Knowledge base list',
+      knowledgeBaseSearch: 'Knowledge base search',
+      knowledgeGraph: 'Knowledge graph',
+      mindmap: 'Mind map',
+      webSearch: 'Web search',
+      askUserQuestion: 'Question',
+      todo: 'Todo',
+      mysqlQuery: 'Execute SQL query',
+      mysqlDescribeTable: 'Describe table schema',
+      mysqlListTables: 'List database tables'
+    },
+    askUserQuestion: {
+      noQuestion: 'No question',
+      answered: 'Answered',
+      other: 'Other: {text}',
+      multipleQuestions: '{question} and {count} more'
+    },
+    listKbs: {
+      count: '{count} knowledge bases',
+      noDescription: 'No description',
+      empty: 'No knowledge bases',
+      summary: '{count} knowledge bases: {names}',
+      summaryWithMore: '{count} knowledge bases: {names} and {remaining} more'
+    },
+    queryKb: {
+      kbLabel: 'Knowledge base: {name}',
+      graphSummary:
+        'Graph search: {entities} entities, {relationships} relationships, {references} references',
+      entities: 'Entities',
+      relationships: 'Relationships',
+      references: 'References',
+      related: 'Related',
+      empty: 'No relevant knowledge base content found',
+      unnamedEntity: 'Unnamed entity',
+      uncategorized: 'Uncategorized'
+    },
+    webSearch: {
+      empty: 'No relevant search results found'
+    },
+    todo: {
+      inProgress: 'In progress: {content}',
+      pending: 'Pending: {content}',
+      updated: 'Updated: {content}',
+      empty: 'No todo items'
+    },
+    grep: {
+      matchedFiles: '{count} matching files',
+      matchedLines: '{count} matching lines',
+      lineNumber: 'Line {line}',
+      empty: 'No matches found'
+    },
+    knowledgeGraph: {
+      summary: 'Found {nodes} nodes and {relations} relationships',
+      refresh: 'Render graph again'
+    },
+    mysql: {
+      executeQuery: 'Execute SQL query:',
+      describeTable: 'Describe table schema:',
+      listTables: 'List database tables'
+    }
   }
 }

@@ -2,7 +2,7 @@
   <BaseToolCall :tool-call="toolCall" :hide-params="true">
     <template #header>
       <div class="sep-header">
-        <span class="note">网络搜索</span>
+        <span class="note">{{ t('toolCalls.labels.webSearch') }}</span>
         <span class="separator" v-if="query">|</span>
         <span class="description">{{ query }}</span>
       </div>
@@ -19,7 +19,7 @@
         </div>
 
         <div v-else class="no-results">
-          <p>未找到相关搜索结果</p>
+          <p>{{ t('toolCalls.webSearch.empty') }}</p>
         </div>
       </div>
     </template>
@@ -30,6 +30,7 @@
 import BaseToolCall from '../BaseToolCall.vue'
 import WebSearchResultList from '@/components/sources/WebSearchResultList.vue'
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   toolCall: {
@@ -37,6 +38,8 @@ const props = defineProps({
     required: true
   }
 })
+
+const { t } = useI18n()
 
 const parseData = (content) => {
   if (typeof content === 'string') {

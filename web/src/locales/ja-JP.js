@@ -153,5 +153,84 @@ export default {
       streamProcessing: 'ストリーム処理',
       inputValidation: '入力検証'
     }
+  },
+  toolCalls: {
+    summary: {
+      single: '使用ツール: {tool}',
+      multiple: '{count}個のツールを呼び出しました'
+    },
+    status: {
+      completed: '完了',
+      failedCount: '{count}件失敗',
+      runningCount: '{count}件実行中'
+    },
+    base: {
+      success: 'ツール {tool} の実行が完了しました',
+      error: 'ツール {tool} の実行に失敗しました',
+      running: 'ツールを呼び出し中: {tool}',
+      params: 'パラメータ'
+    },
+    labels: {
+      knowledgeBase: 'ナレッジベース',
+      knowledgeBaseList: 'ナレッジベース一覧',
+      knowledgeBaseSearch: 'ナレッジベース検索',
+      knowledgeGraph: 'ナレッジグラフ',
+      mindmap: 'マインドマップ',
+      webSearch: 'ウェブ検索',
+      askUserQuestion: '質問',
+      todo: 'TODO',
+      mysqlQuery: 'SQL クエリ実行',
+      mysqlDescribeTable: 'テーブル構造表示',
+      mysqlListTables: 'データベーステーブル一覧'
+    },
+    askUserQuestion: {
+      noQuestion: '質問はありません',
+      answered: '回答済み',
+      other: 'その他: {text}',
+      multipleQuestions: '{question} ほか {count} 件'
+    },
+    listKbs: {
+      count: 'ナレッジベース {count} 件',
+      noDescription: '説明なし',
+      empty: 'ナレッジベースはありません',
+      summary: 'ナレッジベース {count} 件: {names}',
+      summaryWithMore: 'ナレッジベース {count} 件: {names} ほか {remaining} 件'
+    },
+    queryKb: {
+      kbLabel: 'ナレッジベース: {name}',
+      graphSummary:
+        'グラフ検索: エンティティ {entities} 件、関係 {relationships} 件、参照 {references} 件',
+      entities: 'エンティティ',
+      relationships: '関係',
+      references: '参照',
+      related: '関連',
+      empty: '関連するナレッジベース内容は見つかりませんでした',
+      unnamedEntity: '名称未設定のエンティティ',
+      uncategorized: '未分類'
+    },
+    webSearch: {
+      empty: '関連する検索結果は見つかりませんでした'
+    },
+    todo: {
+      inProgress: '進行中: {content}',
+      pending: '未対応: {content}',
+      updated: '更新: {content}',
+      empty: 'TODO はありません'
+    },
+    grep: {
+      matchedFiles: '{count} 件のファイルに一致',
+      matchedLines: '{count} 行に一致',
+      lineNumber: '{line} 行目',
+      empty: '一致する結果は見つかりませんでした'
+    },
+    knowledgeGraph: {
+      summary: 'ノード {nodes} 件、関係 {relations} 件が見つかりました',
+      refresh: 'グラフを再描画'
+    },
+    mysql: {
+      executeQuery: 'SQL クエリを実行:',
+      describeTable: 'テーブル構造を表示:',
+      listTables: 'データベーステーブル一覧'
+    }
   }
 }

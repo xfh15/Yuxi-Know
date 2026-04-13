@@ -17,6 +17,7 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
 import BaseToolCall from '../BaseToolCall.vue'
 
 defineProps({
@@ -25,6 +26,8 @@ defineProps({
     required: true
   }
 })
+
+const { locale } = useI18n()
 
 const parseData = (content) => {
   if (typeof content === 'string') {
@@ -49,7 +52,7 @@ const formatNumber = (num) => {
   }
 
   // 使用本地化格式
-  return new Intl.NumberFormat('zh-CN', {
+  return new Intl.NumberFormat(locale.value || 'zh-CN', {
     maximumFractionDigits: 10,
     useGrouping: true
   }).format(num)

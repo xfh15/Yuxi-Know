@@ -153,5 +153,83 @@ export default {
       streamProcessing: '流式处理',
       inputValidation: '输入验证'
     }
+  },
+  toolCalls: {
+    summary: {
+      single: '使用了工具: {tool}',
+      multiple: '已调用 {count} 个工具'
+    },
+    status: {
+      completed: '已完成',
+      failedCount: '{count} 失败',
+      runningCount: '{count} 进行中'
+    },
+    base: {
+      success: '工具 {tool} 执行完成',
+      error: '工具 {tool} 执行失败',
+      running: '正在调用工具: {tool}',
+      params: '参数'
+    },
+    labels: {
+      knowledgeBase: '知识库',
+      knowledgeBaseList: '知识库列表',
+      knowledgeBaseSearch: '知识库搜索',
+      knowledgeGraph: '知识图谱',
+      mindmap: '思维导图',
+      webSearch: '网络搜索',
+      askUserQuestion: '提问',
+      todo: '待办',
+      mysqlQuery: '执行 SQL 查询',
+      mysqlDescribeTable: '描述表结构',
+      mysqlListTables: '列出数据库表'
+    },
+    askUserQuestion: {
+      noQuestion: '无问题',
+      answered: '已回答',
+      other: '其他: {text}',
+      multipleQuestions: '{question} 等 {count} 题'
+    },
+    listKbs: {
+      count: '共 {count} 个知识库',
+      noDescription: '无描述',
+      empty: '暂无知识库',
+      summary: '{count}个知识库：{names}',
+      summaryWithMore: '{count}个知识库：{names} 等{remaining}个'
+    },
+    queryKb: {
+      kbLabel: '知识库: {name}',
+      graphSummary: '图谱检索: 实体 {entities} 个, 关系 {relationships} 条, 引用 {references} 条',
+      entities: '实体',
+      relationships: '关系',
+      references: '引用',
+      related: '关联',
+      empty: '未找到相关知识库内容',
+      unnamedEntity: '未命名实体',
+      uncategorized: '未分类'
+    },
+    webSearch: {
+      empty: '未找到相关搜索结果'
+    },
+    todo: {
+      inProgress: '进行中: {content}',
+      pending: '待处理: {content}',
+      updated: '更新: {content}',
+      empty: '暂无待办事项'
+    },
+    grep: {
+      matchedFiles: '共匹配 {count} 个文件',
+      matchedLines: '共匹配 {count} 行',
+      lineNumber: '第 {line} 行',
+      empty: '未找到匹配结果'
+    },
+    knowledgeGraph: {
+      summary: '找到 {nodes} 个节点, {relations} 个关系',
+      refresh: '重新渲染图谱'
+    },
+    mysql: {
+      executeQuery: '执行SQL查询：',
+      describeTable: '描述表结构：',
+      listTables: '列出数据库表'
+    }
   }
 }

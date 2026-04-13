@@ -15,6 +15,7 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
 import BaseToolCall from '../BaseToolCall.vue'
 
 defineProps({
@@ -23,6 +24,8 @@ defineProps({
     required: true
   }
 })
+
+const { t } = useI18n()
 
 const formatResult = (content) => {
   if (!content) return ''

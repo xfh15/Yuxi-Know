@@ -2,7 +2,7 @@
   <BaseToolCall :tool-call="toolCall" hide-params>
     <template #header>
       <div class="sep-header">
-        <span class="note">todo</span>
+        <span class="note">{{ t('toolCalls.labels.todo') }}</span>
         <span class="separator" v-if="query">|</span>
         <span class="description">{{ query }}</span>
       </div>
@@ -33,7 +33,7 @@
           </div>
         </div>
         <div v-if="todoListData(resultContent).length === 0" class="no-results">
-          <p>暂无待办事项</p>
+          <p>{{ t('toolCalls.todo.empty') }}</p>
         </div>
       </div>
     </template>
@@ -42,6 +42,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import BaseToolCall from '../BaseToolCall.vue'
 import {
   CheckCircleOutlined,

@@ -4,7 +4,9 @@
       <div class="sep-header">
         <span class="note">{{ operationLabel }}</span>
         <span class="separator" v-if="kbName">|</span>
-        <span class="description" v-if="kbName">知识库: {{ kbName }}</span>
+        <span class="description" v-if="kbName">{{
+          t('toolCalls.queryKb.kbLabel', { name: kbName })
+        }}</span>
       </div>
     </template>
     <template #result="{ resultContent }">
@@ -17,6 +19,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import BaseToolCall from '../BaseToolCall.vue'
 
 const props = defineProps({
@@ -25,6 +28,8 @@ const props = defineProps({
     required: true
   }
 })
+
+const { t } = useI18n()
 
 const args = computed(() => {
   const value = props.toolCall.args || props.toolCall.function?.arguments
@@ -37,7 +42,9 @@ const args = computed(() => {
   }
 })
 
-const toolName = computed(() => props.toolCall.name || props.toolCall.function?.name || '思维导图')
+const toolName = computed(
+  () => props.toolCall.name || props.toolCall.function?.name || t('toolCalls.labels.mindmap')
+)
 
 const operationLabel = computed(() => toolName.value)
 

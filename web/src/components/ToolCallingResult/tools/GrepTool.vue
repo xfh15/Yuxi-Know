@@ -31,13 +31,15 @@
           >
             <div class="result-meta">
               <span class="path code">{{ match.path }}</span>
-              <span class="line-number" v-if="match.line">Line {{ match.line }}</span>
+              <span class="line-number" v-if="match.line">{{
+                t('toolCalls.grep.lineNumber', { line: match.line })
+              }}</span>
             </div>
             <pre class="matched-text">{{ match.text }}</pre>
           </div>
         </div>
 
-        <div class="empty-state" v-else-if="isEmptyResult">未找到匹配结果</div>
+        <div class="empty-state" v-else-if="isEmptyResult">{{ t('toolCalls.grep.empty') }}</div>
 
         <div class="raw-result" v-else>
           <pre>{{ rawResultText }}</pre>
@@ -49,6 +51,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import BaseToolCall from '../BaseToolCall.vue'
 
 const props = defineProps({
@@ -57,6 +60,8 @@ const props = defineProps({
     required: true
   }
 })
+
+const { t } = useI18n()
 
 const parsedArgs = computed(() => {
   const args = props.toolCall.args || props.toolCall.function?.arguments
@@ -113,10 +118,10 @@ const isEmptyResult = computed(() => {
 const matchCountLabel = computed(() => {
   if (isFileListResult.value) {
     const count = fileMatches.value.length
-    return count ? `共匹配 ${count} 个文件` : ''
+    return count ? t('toolCalls.grep.matchedFiles', { count }) : ''
   }
   if (lineMatches.value.length) {
-    return `共匹配 ${lineMatches.value.length} 行`
+    return t('toolCalls.grep.matchedLines', { count: lineMatches.value.length })
   }
   return ''
 })

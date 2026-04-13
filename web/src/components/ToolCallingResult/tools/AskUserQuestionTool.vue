@@ -8,7 +8,7 @@
   >
     <template #header>
       <div class="sep-header">
-        <span class="note">提问</span>
+        <span class="note">{{ t('toolCalls.labels.askUserQuestion') }}</span>
         <span class="separator">|</span>
         <span class="description">{{ shortQuestionSummary }}</span>
         <span v-if="displayAnswer" class="tag tag-answered"> 已回答: {{ displayAnswer }} </span>
@@ -47,6 +47,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import BaseToolCall from '../BaseToolCall.vue'
 import { normalizeQuestions } from '@/utils/questionUtils'
 
@@ -100,14 +101,17 @@ const questions = computed(() => {
 })
 
 const shortQuestionSummary = computed(() => {
-  if (!questions.value.length) return '无问题'
+  if (!questions.value.length) return t('toolCalls.askUserQuestion.noQuestion')
 
   const firstQuestion = questions.value[0].question
   const shortFirstQuestion =
     firstQuestion.length > 36 ? firstQuestion.slice(0, 36) + '...' : firstQuestion
 
   if (questions.value.length === 1) return shortFirstQuestion
-  return `${shortFirstQuestion} 等 ${questions.value.length} 题`
+  return t('toolCalls.askUserQuestion.multipleQuestions', {
+    question: shortFirstQuestion,
+    count: questions.value.length
+  })
 })
 
 const userAnswer = computed(() => {

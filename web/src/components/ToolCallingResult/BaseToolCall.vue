@@ -32,7 +32,7 @@
             :tool-name="toolName"
             :result-content="resultContent"
           >
-            工具&nbsp; <span class="tool-name">{{ toolName }}</span> &nbsp; 执行完成
+            {{ successHeaderText }}
           </slot>
 
           <slot
@@ -41,12 +41,12 @@
             :tool-name="toolName"
             :error-message="toolCall.error_message"
           >
-            工具&nbsp; <span class="tool-name">{{ toolName }}</span> &nbsp; 执行失败
+            {{ errorHeaderText }}
             <span v-if="toolCall.error_message">（{{ toolCall.error_message }}）</span>
           </slot>
 
           <slot name="header-running" v-else :tool-name="toolName">
-            正在调用工具: &nbsp; <span class="tool-name">{{ toolName }}</span>
+            {{ runningHeaderText }}
           </slot>
         </template>
       </div>
@@ -64,7 +64,7 @@
       <div class="tool-params" v-if="hasParams && !hideParams">
         <slot name="params" :tool-call="toolCall" :args="formattedArgs">
           <div class="tool-params-content">
-            <strong>参数: </strong>
+            <strong>{{ t('toolCalls.base.params') }}: </strong>
             <span>{{ formattedArgs }}</span>
           </div>
         </slot>
@@ -92,9 +92,11 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { Loader, ChevronsUpDown, ChevronsDownUp, XCircle, CheckCircle } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
 import { useAgentStore } from '@/stores/agent'
 import { storeToRefs } from 'pinia'
 import { getToolCallId, getToolIcon } from './toolRegistry'
+import { buildBaseToolHeaderText } from './toolCallMessages'
 
 const props = defineProps({
   toolCall: {
@@ -125,6 +127,7 @@ const props = defineProps({
   }
 })
 
+const { t } = useI18n()
 const agentStore = useAgentStore()
 const { availableTools } = storeToRefs(agentStore)
 
@@ -154,6 +157,27 @@ const toolName = computed(() => {
 
 // Tool Icon Mapping
 const toolIcon = computed(() => getToolIcon(toolId.value))
+const successHeaderText = computed(() =>
+  buildBaseToolHeaderText({
+    t,
+    toolName: toolName.value,
+    status: 'success'
+  })
+)
+const errorHeaderText = computed(() =>
+  buildBaseToolHeaderText({
+    t,
+    toolName: toolName.value,
+    status: 'error'
+  })
+)
+const runningHeaderText = computed(() =>
+  buildBaseToolHeaderText({
+    t,
+    toolName: toolName.value,
+    status: 'running'
+  })
+)
 
 // Args Logic
 const formattedArgs = computed(() => {

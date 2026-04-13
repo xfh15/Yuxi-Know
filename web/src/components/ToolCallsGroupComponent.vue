@@ -139,8 +139,12 @@ const statusSummary = computed(() => {
   if (errorCount > 0) parts.push(`${errorCount} 失败`)
   if (runningCount > 0) parts.push(`${runningCount} 进行中`)
 
-  return parts.join(' · ')
-})
+const statusSummary = computed(() =>
+  buildToolCallsStatusSummary({
+    t,
+    toolCalls: normalizedToolCalls.value
+  })
+)
 
 const toggleToolCallsExpanded = () => {
   if (!shouldCollapseToolCalls.value) return
