@@ -41,6 +41,7 @@
 <script setup>
 import { computed, ref, watch, inject } from 'vue'
 import { ChevronDown, ChevronRight, Atom } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
 import { ToolCallRenderer } from '@/components/ToolCallingResult'
 import {
   getToolCallId,
@@ -49,6 +50,7 @@ import {
 } from '@/components/ToolCallingResult/toolRegistry'
 
 const activeSubagentToolCallIds = inject('activeSubagentToolCallIds', null)
+const { t } = useI18n()
 
 // task 工具结果不随流式返回，不能用 tool_call_result 判断运行中：只有「活跃」的 task 才算运行中。
 const toolRunState = (toolCall) => {
@@ -111,9 +113,9 @@ const getToolCallLabel = (toolCall) => {
 
 const toolCallsSummaryTitle = computed(() => {
   if (normalizedToolCalls.value.length === 1) {
-    return `调用: ${getToolCallLabel(normalizedToolCalls.value[0])}`
+    return t('toolCalls.summary.single', { tool: getToolCallLabel(normalizedToolCalls.value[0]) })
   }
-  return `已调用 ${normalizedToolCalls.value.length} 个工具`
+  return t('toolCalls.summary.multiple', { count: normalizedToolCalls.value.length })
 })
 
 const toolCallsNamesMeta = computed(() => {
@@ -134,17 +136,13 @@ const statusSummary = computed(() => {
 
   const parts = []
   if (successCount > 0 && successCount === normalizedToolCalls.value.length) {
-    return '已完成'
+    return t('toolCalls.status.completed')
   }
-  if (errorCount > 0) parts.push(`${errorCount} 失败`)
-  if (runningCount > 0) parts.push(`${runningCount} 进行中`)
+  if (errorCount > 0) parts.push(t('toolCalls.status.failedCount', { count: errorCount }))
+  if (runningCount > 0) parts.push(t('toolCalls.status.runningCount', { count: runningCount }))
 
-const statusSummary = computed(() =>
-  buildToolCallsStatusSummary({
-    t,
-    toolCalls: normalizedToolCalls.value
-  })
-)
+  return parts.join(' · ')
+})
 
 const toggleToolCallsExpanded = () => {
   if (!shouldCollapseToolCalls.value) return

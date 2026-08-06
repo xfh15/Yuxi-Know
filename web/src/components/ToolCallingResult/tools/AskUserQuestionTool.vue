@@ -66,6 +66,8 @@ const props = defineProps({
   }
 })
 
+const { t } = useI18n()
+
 const parseJsonValue = (value, fallback = null) => {
   if (value === undefined || value === null || value === '') return fallback
   if (typeof value === 'object') return value

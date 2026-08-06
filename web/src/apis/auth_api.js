@@ -3,6 +3,7 @@
  */
 
 import { apiAdminGet, apiGet, apiPost } from './base'
+import { translate } from '@/i18n'
 
 async function parseErrorDetail(response, fallbackMessage) {
   const contentType = response.headers.get('content-type') || ''

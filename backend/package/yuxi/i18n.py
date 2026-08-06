@@ -151,16 +151,22 @@ _TRANSLATIONS: dict[str, dict[str, str]] = {
         "ja-JP": "Super administrator accounts cannot be downgraded",
     },
     "不能将管理员降级为普通用户，因为该用户是当前部门的唯一管理员": {
-        "en-US": "This administrator cannot be downgraded because the user is the only administrator in the current department",
-        "ja-JP": "This administrator cannot be downgraded because the user is the only administrator in the current department",
+        "en-US": (
+            "This administrator cannot be downgraded because the user is the only administrator "
+            "in the current department"
+        ),
+        "ja-JP": "現在の部門で唯一の管理者であるため、この管理者を一般ユーザーに降格できません",
     },
     "只有超级管理员才能修改用户部门": {
         "en-US": "Only super administrators can change a user's department",
         "ja-JP": "Only super administrators can change a user's department",
     },
     "不能修改该用户的部门，因为该用户是当前部门的唯一管理员": {
-        "en-US": "This user's department cannot be changed because the user is the only administrator in the current department",
-        "ja-JP": "This user's department cannot be changed because the user is the only administrator in the current department",
+        "en-US": (
+            "This user's department cannot be changed because the user is the only administrator "
+            "in the current department"
+        ),
+        "ja-JP": "このユーザーは現在の部門で唯一の管理者であるため、所属部門を変更できません",
     },
     "不能删除超级管理员账户": {
         "en-US": "Super administrator accounts cannot be deleted",

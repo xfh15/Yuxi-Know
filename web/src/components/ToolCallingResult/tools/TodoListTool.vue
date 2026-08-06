@@ -59,6 +59,8 @@ const props = defineProps({
   }
 })
 
+const { t } = useI18n()
+
 const TODO_NAME_MAX_LENGTH = 20
 
 const formatTodoName = (content) => {

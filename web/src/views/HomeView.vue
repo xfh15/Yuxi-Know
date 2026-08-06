@@ -212,7 +212,6 @@ import { useI18n } from 'vue-i18n'
 import { useUserStore } from '@/stores/user'
 import { useInfoStore } from '@/stores/info'
 import { healthApi } from '@/apis/system_api'
-import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import UserInfoComponent from '@/components/UserInfoComponent.vue'
 import {
   BookText,

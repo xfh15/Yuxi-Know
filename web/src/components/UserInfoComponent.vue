@@ -35,29 +35,27 @@
           <a-menu-divider />
           <a-menu-item key="docs" @click="openDocs">
             <template #icon><BookOpen :size="16" /></template>
-            <span class="menu-text">文档中心</span>
+            <span class="menu-text">{{ t('common.documentationCenter') }}</span>
           </a-menu-item>
           <a-menu-item key="theme" @click="toggleTheme">
             <template #icon>
               <Sun v-if="themeStore.isDark" :size="16" />
               <Moon v-else :size="16" />
             </template>
-            <span class="menu-text">{{
-              themeStore.isDark ? '切换到浅色模式' : '切换到深色模式'
-            }}</span>
+            <span class="menu-text">{{ themeSwitchLabel }}</span>
           </a-menu-item>
           <a-menu-divider />
           <a-menu-item v-if="userStore.isSuperAdmin" key="debug" @click="showDebug = true">
             <template #icon><Terminal :size="16" /></template>
-            <span class="menu-text">调试面板（非生产环境）</span>
+            <span class="menu-text">{{ t('common.debugPanelNonProd') }}</span>
           </a-menu-item>
           <a-menu-item key="setting" @click="goToSetting">
             <template #icon><Settings :size="16" /></template>
-            <span class="menu-text">设置</span>
+            <span class="menu-text">{{ t('common.systemSettings') }}</span>
           </a-menu-item>
           <a-menu-item key="logout" @click="logout">
             <template #icon><LogOut :size="16" /></template>
-            <span class="menu-text">退出登录</span>
+            <span class="menu-text">{{ t('common.logout') }}</span>
           </a-menu-item>
         </a-menu>
       </template>

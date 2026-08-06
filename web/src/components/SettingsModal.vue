@@ -187,11 +187,9 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useUserStore } from '@/stores/user'
 import {
   CircleUser,
-  ExternalLink,
   Settings,
   Key,
   ScanText,
-  Star,
   SquareTerminal,
   User,
   Users,
@@ -220,10 +218,6 @@ const emit = defineEmits(['update:visible', 'close'])
 
 const userStore = useUserStore()
 const activeTab = ref('account')
-const showStarCard = ref(true)
-
-const STAR_CARD_STORAGE_KEY = 'yuxi-settings-star-card-dismissed'
-const projectRepoUrl = 'https://github.com/xerrors/Yuxi'
 
 const visible = computed({
   get: () => props.visible,

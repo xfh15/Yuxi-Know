@@ -110,6 +110,7 @@ const props = defineProps({
 })
 
 const databaseStore = useDatabaseStore()
+const { t } = useI18n()
 
 const args = computed(() => {
   const value = props.toolCall.args || props.toolCall.function?.arguments

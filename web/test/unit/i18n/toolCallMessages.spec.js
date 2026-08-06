@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict'
 
-import jaJP from '../../../locales/ja-JP.js'
+import jaJP from '../../../src/locales/ja-JP.js'
 import {
   buildBaseToolHeaderText,
   buildToolCallsStatusSummary,
   buildToolCallsSummaryTitle,
   createTranslator
-} from '../toolCallMessages.js'
+} from '../../../src/components/ToolCallingResult/toolCallMessages.js'
 
 const t = createTranslator(jaJP)
 

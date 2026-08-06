@@ -4,7 +4,7 @@ import {
   DEFAULT_LOCALE,
   normalizeLocale,
   resolveBrowserLocale
-} from '../localeHelpers.js'
+} from '../../../src/i18n/localeHelpers.js'
 
 const originalNavigator = globalThis.navigator
 

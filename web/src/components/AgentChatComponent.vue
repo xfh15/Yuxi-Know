@@ -756,8 +756,6 @@ const greetingMessages = [
   '👋 今日はどんなテーマを進めますか？',
   '👋 いつでもお手伝いできます。'
 ]
-const defaultThreadTitles = ['新的对话', '新しい会話']
-
 // 随机选择一个打招呼文本
 const randomGreeting = greetingMessages[Math.floor(Math.random() * greetingMessages.length)]
 
