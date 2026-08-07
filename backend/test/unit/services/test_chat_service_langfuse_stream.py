@@ -476,6 +476,12 @@ async def test_stream_agent_chat_maps_custom_compression_event_to_context_compre
 
         async def stream_messages_with_state(self, messages, input_context=None, **kwargs):
             yield "custom", {"type": "yuxi.context_compression", "status": "started"}
+            yield "custom", {
+                "type": "yuxi.tool_progress",
+                "tool_name": "crawl_website",
+                "progress": 35,
+                "message": "ページを整理中...",
+            }
             yield "messages", (AIMessageChunk(content="hi"), {"node": "llm"})
             yield (
                 "custom",
@@ -545,3 +551,11 @@ async def test_stream_agent_chat_maps_custom_compression_event_to_context_compre
     assert compression_chunks[1]["compression"]["status"] == "completed"
     assert compression_chunks[1]["compression"]["cutoff_index"] == 5
     assert compression_chunks[1]["compression"]["file_path"] == "/conv/x.md"
+    progress_chunks = [chunk for chunk in chunks if chunk.get("status") == "tool_progress"]
+    assert len(progress_chunks) == 1
+    assert progress_chunks[0]["status"] == "tool_progress"
+    assert progress_chunks[0]["progress"] == {
+        "tool_name": "crawl_website",
+        "progress": 35,
+        "message": "ページを整理中...",
+    }

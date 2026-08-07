@@ -56,7 +56,7 @@
             </span>
           </div>
         </template>
-        <div v-else-if="!collapsed" class="empty-list">暂无对话历史</div>
+        <div v-else-if="!collapsed" class="empty-list">会話履歴がありません</div>
         <div v-if="hasMoreChats && !collapsed" class="load-more-wrapper">
           <a-button
             type="text"

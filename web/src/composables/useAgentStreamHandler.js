@@ -123,6 +123,8 @@ export function useAgentStreamHandler({
             threadState.onGoingConv.msgChunks[resolvedRequestId] = [initMessage]
           }
           threadState.replyLoadingVisible = true
+          threadState.toolProgressMessage = ''
+          threadState.toolProgressPercent = null
           threadState.contextCompressing = false
         }
         return false
@@ -175,6 +177,8 @@ export function useAgentStreamHandler({
           threadState.pendingRequestId = null
           threadState.pendingInterrupt = null
           threadState.contextCompressing = false
+          threadState.toolProgressMessage = ''
+          threadState.toolProgressPercent = null
         }
         return true
 
@@ -182,6 +186,8 @@ export function useAgentStreamHandler({
       case 'human_approval_required':
         streamSmoother?.flushThread(threadId)
         threadState.replyLoadingVisible = false
+        threadState.toolProgressMessage = ''
+        threadState.toolProgressPercent = null
         console.log(`${debugPrefix}[approval_required]`, {
           threadId,
           currentAgentId: unref(currentAgentId)
@@ -224,6 +230,15 @@ export function useAgentStreamHandler({
         }
         return false
 
+      case 'tool_progress':
+        if (chunk.progress) {
+          threadState.toolProgressMessage = String(chunk.progress.message || '')
+          threadState.toolProgressPercent = Number.isFinite(Number(chunk.progress.progress))
+            ? Number(chunk.progress.progress)
+            : null
+        }
+        return false
+
       case 'finished':
         streamSmoother?.flushThread(threadId)
         // 先标记流式结束，但保持消息显示直到历史记录加载完成
@@ -233,6 +248,8 @@ export function useAgentStreamHandler({
           threadState.pendingRequestId = null
           threadState.pendingInterrupt = null
           threadState.contextCompressing = false
+          threadState.toolProgressMessage = ''
+          threadState.toolProgressPercent = null
           console.log(`${debugPrefix}[finished]`, {
             threadId,
             currentAgentId: unref(currentAgentId),
@@ -265,6 +282,8 @@ export function useAgentStreamHandler({
           threadState.replyLoadingVisible = false
           threadState.pendingRequestId = null
           threadState.contextCompressing = false
+          threadState.toolProgressMessage = ''
+          threadState.toolProgressPercent = null
           const pendingInterrupt = extractPendingInterrupt(chunk, threadId)
           if (pendingInterrupt) {
             threadState.pendingInterrupt = pendingInterrupt

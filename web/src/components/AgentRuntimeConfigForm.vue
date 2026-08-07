@@ -256,9 +256,7 @@
 
     <a-modal
       v-model:open="selectionModalOpen"
-      :title="`${
-        translateConfigDisplayName(configurableItems[currentConfigKey]?.name || '項目')
-      } を選択`"
+      :title="`${configurableItems[currentConfigKey]?.name || '項目'} を選択`"
       :width="800"
       :footer="null"
       :maskClosable="false"

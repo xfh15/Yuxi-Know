@@ -167,9 +167,9 @@
                   <a-form-item
                     :label="t('auth.loginAccount')"
                     name="loginId"
-                    :rules="[{ required: true, message: '请输入UID或手机号' }]"
+                    :rules="[{ required: true, message: 'UIDまたは電話番号を入力してください' }]"
                   >
-                    <a-input v-model:value="loginForm.loginId" placeholder="UID或手机号">
+                    <a-input v-model:value="loginForm.loginId" placeholder="UIDまたは電話番号">
                       <template #prefix>
                         <user-icon size="18" />
                       </template>
@@ -270,7 +270,7 @@
     <!-- 页面底部：版权信息等 -->
     <footer class="page-footer">
       <div class="footer-links">
-        <a href="https://github.com/xerrors" target="_blank">{{ t('common.contactUs') }}</a>
+        <a href="https://z-soft.co.jp" target="_blank">{{ t('common.contactUs') }}</a>
       </div>
       <div class="copyright">
         &copy; {{ new Date().getFullYear() }} {{ brandName }}. {{ t('common.allRightsReserved') }}

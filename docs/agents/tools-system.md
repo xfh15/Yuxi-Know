@@ -43,7 +43,16 @@ from yuxi.agents.toolkits import buildin, debug  # 触发模块内 @tool 装饰�
 | `ocr_parse_file` | 将 uploads、outputs 或 workspace 中的 PDF、Office 或图片文件转换为 Markdown |
 | `present_artifacts` | 展示 Agent 沙盒 outputs 目录下的产物文件 |
 | `install_skill` | 从沙盒路径或 Git 来源安装当前用户私有 Skill，并激活当前主智能体会话；子智能体禁用 |
-| `tavily_search` | Tavily 网页搜索（需配置 `TAVILY_API_KEY`） |
+| `web_search` | 联网网页搜索；可使用 Tavily 或豆包提供商 |
+| `crawl_website` | 将公开网站整理为当前线程的可搜索文件（需配置 `TAVILY_API_KEY`） |
+
+### 网站资料抓取
+
+`crawl_website(url)` 只在用户明确要求抓取、整理或学习网站时调用，普通消息仅出现 URL 不会触发。管理员需要在 Demo Agent 的工具配置中显式选择该工具；它不会默认开放给其他 Agent。
+
+工具使用 Tavily Crawl 遍历同主机页面，将页面 Markdown、同主机 PDF 原件及其解析 Markdown 发布到当前线程的 `/home/gem/user-data/outputs/website/{host}/`。固定输出包含 `index.md`、`pages/*.md`、`pdf/*`、可独立失败的 `qa.md` 和 `manifest.json`。后续问答优先一次读取 `qa.md`，只有找不到答案时才按 `index.md` 精准读取来源文件，避免重复扫描目录。新线程不会继承这些资料，也不会创建知识库或向量索引。
+
+固定边界为抓取深度 2、广度 20、最多 30 个网页来源和 20 个 PDF 来源、网页资料集最大 50 MiB、单个 PDF 最大 10 MiB、PDF 原始文件总量最大 50 MiB。网页与 PDF 来源及容量额度独立计算；所有直接下载均校验公网目标、重定向和同主机边界；相同内容重抓会按指纹短路，不重复解析 PDF 或生成 QA。
 
 Qwen-Image 生成能力已迁移为内置 Skill `image-gen`。模型调用与图片下载在 Agent 沙盒中完成，生成后的图片保存到 `/home/gem/user-data/outputs/`，再通过 `present_artifacts` 展示。
 

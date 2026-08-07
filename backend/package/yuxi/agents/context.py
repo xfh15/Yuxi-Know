@@ -380,6 +380,7 @@ class BaseContext:
 _DEFAULT_ALL_CONTEXT_FIELDS = frozenset({"tools", "knowledges", "mcps", "skills"})
 _EMPTY_ALL_CONTEXT_FIELDS = frozenset({"subagents"})
 _AGENT_RESOURCE_FIELDS = _DEFAULT_ALL_CONTEXT_FIELDS | _EMPTY_ALL_CONTEXT_FIELDS
+_EXPLICIT_ONLY_TOOLS = frozenset({"crawl_website"})
 
 
 def _normalize_selected_resource_keys(value: Any, available: list[str]) -> list[str]:
@@ -398,6 +399,14 @@ def _normalize_selected_resource_keys(value: Any, available: list[str]) -> list[
         seen.add(key)
         normalized.append(key)
     return normalized
+
+
+def _default_resource_keys(field_name: str, available: list[str]) -> list[str]:
+    """生成默认资源集合，并排除必须由管理员显式选择的高成本工具。"""
+
+    if field_name == "tools":
+        return [key for key in available if key not in _EXPLICIT_ONLY_TOOLS]
+    return available
 
 
 def _resource_fields_requiring_available_keys(normalized: dict, resource_fields: set[str]) -> set[str]:
@@ -513,7 +522,7 @@ async def normalize_agent_context_config(
     for field_name, available_keys in available.items():
         current = normalized.get(field_name)
         if current is None:
-            normalized[field_name] = available_keys
+            normalized[field_name] = _default_resource_keys(field_name, available_keys)
         else:
             normalized[field_name] = _normalize_selected_resource_keys(current, available_keys)
 

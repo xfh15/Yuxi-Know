@@ -1,30 +1,30 @@
 <template>
   <div class="apikey-management">
-    <!-- 头部区域 -->
+    <!-- ヘッダー -->
     <div class="header-section">
       <div class="header-content">
-        <div class="section-title">API Key 管理</div>
+        <div class="section-title">API キー管理</div>
         <p class="section-description">
-          用于外部系统调用 Agent 对话接口。密钥仅显示一次，请妥善保管。
+          外部システムから Agent の対話 API を呼び出すために使用します。キーは一度しか表示されないため、大切に保管してください。
         </p>
       </div>
       <div class="header-actions">
         <a-button
           @click="handleRefresh"
           :loading="refreshing"
-          title="刷新"
+          title="更新"
           class="refresh-btn lucide-icon-btn"
         >
           <template #icon><RefreshCw :size="16" :class="{ spin: refreshing }" /></template>
         </a-button>
         <a-button type="primary" @click="showCreateModal" class="add-btn lucide-icon-btn">
           <Plus :size="14" />
-          创建 API Key
+          API キーを作成
         </a-button>
       </div>
     </div>
 
-    <!-- 主内容区域 -->
+    <!-- メインコンテンツ -->
     <div class="content-section">
       <a-spin :spinning="loading">
         <div v-if="error" class="error-message">
@@ -33,7 +33,7 @@
 
         <div class="cards-container">
           <div v-if="apiKeys.length === 0" class="empty-state">
-            <a-empty description="暂无 API Key，点击上方按钮创建一个" />
+            <a-empty description="API キーはありません。上のボタンから作成してください。" />
           </div>
           <div v-else class="apikey-cards-grid">
             <div v-for="key in apiKeys" :key="key.id" class="apikey-card">
@@ -49,26 +49,26 @@
 
               <div class="card-content">
                 <div class="info-item">
-                  <span class="info-label">过期时间:</span>
-                  <span class="info-value">{{ key.expires_at || '永不过期' }}</span>
+                  <span class="info-label">有効期限:</span>
+                  <span class="info-value">{{ key.expires_at || '無期限' }}</span>
                 </div>
                 <div class="info-item">
-                  <span class="info-label">最后使用:</span>
+                  <span class="info-label">最終使用:</span>
                   <span class="info-value">{{ formatTime(key.last_used_at) }}</span>
                 </div>
               </div>
 
               <div class="card-footer">
                 <div class="footer-left">
-                  <span class="switch-label">{{ key.is_enabled ? '已启用' : '已禁用' }}</span>
+                  <span class="switch-label">{{ key.is_enabled ? '有効' : '無効' }}</span>
                   <a-switch :checked="key.is_enabled" size="small" @change="toggleEnabled(key)" />
                 </div>
                 <div class="footer-actions">
                   <a-popconfirm
-                    title="确定要删除此 API Key 吗？此操作不可恢复。"
+                    title="この API キーを削除しますか？この操作は取り消せません。"
                     @confirm="deleteKey(key)"
-                    ok-text="确定"
-                    cancel-text="取消"
+                    ok-text="削除"
+                    cancel-text="キャンセル"
                   >
                     <a-button
                       size="small"
@@ -76,7 +76,7 @@
                       class="action-btn delete-action-btn lucide-icon-btn"
                     >
                       <Trash2 :size="14" />
-                      <span>删除</span>
+                      <span>削除</span>
                     </a-button>
                   </a-popconfirm>
                 </div>
@@ -87,34 +87,34 @@
       </a-spin>
     </div>
 
-    <!-- 创建 Modal -->
+    <!-- 作成モーダル -->
     <a-modal
       v-model:open="createModalVisible"
-      title="创建 API Key"
+      title="API キーを作成"
       @ok="handleCreate"
       :confirmLoading="createLoading"
-      ok-text="创建"
-      cancel-text="取消"
+      ok-text="作成"
+      cancel-text="キャンセル"
     >
       <a-form layout="vertical" :model="createForm">
-        <a-form-item label="名称" required>
-          <a-input v-model:value="createForm.name" placeholder="如：生产环境API" />
+        <a-form-item label="名前" required>
+          <a-input v-model:value="createForm.name" placeholder="例: 本番環境 API" />
         </a-form-item>
-        <a-form-item label="过期时间">
+        <a-form-item label="有効期限">
           <a-date-picker
             v-model:value="createForm.expires_at"
             show-time
-            placeholder="留空表示永不过期"
+            placeholder="空欄の場合は無期限"
             style="width: 100%"
           />
         </a-form-item>
       </a-form>
     </a-modal>
 
-    <!-- 密钥显示 Modal (创建后一次性显示) -->
+    <!-- キー表示モーダル（作成後に一度だけ表示） -->
     <a-modal
       v-model:open="secretModalVisible"
-      title="API Key 已创建"
+      title="API キーを作成しました"
       :closable="true"
       @cancel="secretModalVisible = false"
       :footer="null"
@@ -123,7 +123,7 @@
       <div class="secret-display">
         <a-alert
           type="warning"
-          message="请立即复制密钥，关闭后将无法再次查看完整密钥"
+          message="キーをすぐにコピーしてください。閉じると完全なキーは再表示できません。"
           show-icon
           class="secret-alert"
         />
@@ -131,7 +131,7 @@
           <code class="secret-value">{{ createdSecret }}</code>
           <a-button type="primary" @click="copySecret" class="copy-btn lucide-icon-btn">
             <Copy :size="14" />
-            复制
+            コピー
           </a-button>
         </div>
       </div>
@@ -164,7 +164,7 @@ const createForm = reactive({
 const formatTime = (timeStr) => {
   if (!timeStr) return '-'
   const date = new Date(timeStr)
-  return date.toLocaleString('zh-CN', {
+  return date.toLocaleString('ja-JP', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -180,22 +180,22 @@ const loadApiKeys = async () => {
     const res = await apikeyApi.list()
     apiKeys.value = res.api_keys || []
   } catch (e) {
-    error.value = e.message || '加载失败'
+    error.value = e.message || '読み込みに失敗しました'
   } finally {
     loading.value = false
   }
 }
 
-// 刷新 API Key 列表
+// API キー一覧を更新する
 const handleRefresh = async () => {
   if (refreshing.value) return
   refreshing.value = true
   try {
     await loadApiKeys()
-    message.success('刷新成功')
+    message.success('更新しました')
   } catch (e) {
-    console.error('刷新失败:', e)
-    message.error('刷新失败')
+    console.error('更新に失敗しました:', e)
+    message.error('更新に失敗しました')
   } finally {
     refreshing.value = false
   }
@@ -209,7 +209,7 @@ const showCreateModal = () => {
 
 const handleCreate = async () => {
   if (!createForm.name.trim()) {
-    message.error('请输入名称')
+    message.error('名前を入力してください')
     return
   }
 
@@ -226,7 +226,7 @@ const handleCreate = async () => {
     secretModalVisible.value = true
     await loadApiKeys()
   } catch (e) {
-    message.error(e.message || '创建失败')
+    message.error(e.message || '作成に失敗しました')
   } finally {
     createLoading.value = false
   }
@@ -235,29 +235,29 @@ const handleCreate = async () => {
 const copySecret = async () => {
   try {
     await navigator.clipboard.writeText(createdSecret.value)
-    message.success('已复制到剪贴板')
+    message.success('クリップボードにコピーしました')
   } catch {
-    message.error('复制失败')
+    message.error('コピーに失敗しました')
   }
 }
 
 const toggleEnabled = async (key) => {
   try {
     await apikeyApi.update(key.id, { is_enabled: !key.is_enabled })
-    message.success(key.is_enabled ? '已禁用' : '已启用')
+    message.success(key.is_enabled ? '無効にしました' : '有効にしました')
     await loadApiKeys()
   } catch (e) {
-    message.error(e.message || '操作失败')
+    message.error(e.message || '操作に失敗しました')
   }
 }
 
 const deleteKey = async (key) => {
   try {
     await apikeyApi.delete(key.id)
-    message.success('删除成功')
+    message.success('削除しました')
     await loadApiKeys()
   } catch (e) {
-    message.error(e.message || '删除失败')
+    message.error(e.message || '削除に失敗しました')
   }
 }
 

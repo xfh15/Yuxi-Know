@@ -63,12 +63,12 @@ const emit = defineEmits(['update:modelValue'])
 const options = [
   {
     value: 'default',
-    label: '请求审批',
+    label: '承認が必要',
     icon: Hand
   },
   {
     value: 'always_trust',
-    label: '完全信任',
+    label: '完全な信頼',
     icon: ShieldAlert
   }
 ]

@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 
 from server.routers import workspace_router
 from server.routers.workspace_router import workspace
-from server.utils.auth_middleware import get_required_user
+from server.utils.auth_middleware import get_admin_user, get_required_user
 from yuxi.storage.postgres.models_business import User
 
 
@@ -72,14 +72,22 @@ class FakeKnowledgeBase:
         }
 
 
-def _build_client(monkeypatch, fake_kb: FakeKnowledgeBase, kb_class) -> TestClient:
+def _build_client(monkeypatch, fake_kb: FakeKnowledgeBase, kb_class, *, allow_admin: bool = True) -> TestClient:
     app = FastAPI()
     app.include_router(workspace, prefix="/api")
 
     async def fake_required_user():
         return User(username="user", uid="user", password_hash="x", role="user", department_id=1)
 
+    async def fake_admin_user():
+        if not allow_admin:
+            from fastapi import HTTPException
+
+            raise HTTPException(status_code=403, detail="需要管理员权限")
+        return User(username="admin", uid="admin", password_hash="x", role="admin", department_id=1)
+
     app.dependency_overrides[get_required_user] = fake_required_user
+    app.dependency_overrides[get_admin_user] = fake_admin_user
     monkeypatch.setattr(workspace_router, "knowledge_base", fake_kb)
     monkeypatch.setattr(
         workspace_router.KnowledgeBaseFactory,
@@ -87,6 +95,14 @@ def _build_client(monkeypatch, fake_kb: FakeKnowledgeBase, kb_class) -> TestClie
         staticmethod(lambda _kb_type: kb_class),
     )
     return TestClient(app)
+
+
+def test_workspace_rejects_regular_users(monkeypatch):
+    client = _build_client(monkeypatch, FakeKnowledgeBase(), SupportsDocuments, allow_admin=False)
+
+    response = client.get("/api/workspace/tree")
+
+    assert response.status_code == 403
 
 
 def test_workspace_knowledge_tree_uses_paginated_document_listing(monkeypatch):

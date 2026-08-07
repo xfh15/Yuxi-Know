@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Upload
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
-from server.utils.auth_middleware import get_required_user
+from server.utils.auth_middleware import get_admin_user
 from yuxi.knowledge.factory import KnowledgeBaseFactory
 from yuxi.knowledge.runtime import knowledge_base
 from yuxi.services.workspace_service import (
@@ -101,7 +101,7 @@ async def get_workspace_tree(
     path: str = Query("/", description="工作区目录路径"),
     recursive: bool = Query(False, description="是否递归返回子目录文件"),
     files_only: bool = Query(False, description="是否仅返回文件"),
-    current_user: User = Depends(get_required_user),
+    current_user: User = Depends(get_admin_user),
 ):
     return await list_workspace_tree(
         path=path,
@@ -134,7 +134,7 @@ def _preview_response(data):
 @workspace.get("/file")
 async def get_workspace_file(
     path: str = Query(..., description="工作区文件路径"),
-    current_user: User = Depends(get_required_user),
+    current_user: User = Depends(get_admin_user),
 ):
     return await read_workspace_file_content(path=path, current_user=current_user)
 
@@ -148,7 +148,7 @@ async def get_workspace_knowledge_tree(
     page_size: int = Query(100, ge=1, le=500, description="每页数量"),
     recursive: bool = Query(False, description="是否递归返回子目录文件"),
     files_only: bool = Query(False, description="是否仅返回文件"),
-    current_user: User = Depends(get_required_user),
+    current_user: User = Depends(get_admin_user),
 ):
     await _ensure_knowledge_read_access(current_user, kb_id)
     await _ensure_knowledge_supports_documents(kb_id)
@@ -181,7 +181,7 @@ async def get_workspace_knowledge_tree(
 async def get_workspace_knowledge_file(
     kb_id: str = Query(..., description="知识库 ID"),
     file_id: str = Query(..., description="知识库文件 ID"),
-    current_user: User = Depends(get_required_user),
+    current_user: User = Depends(get_admin_user),
 ):
     await _ensure_knowledge_read_access(current_user, kb_id)
     try:
@@ -195,7 +195,7 @@ async def download_workspace_knowledge_file(
     kb_id: str = Query(..., description="知识库 ID"),
     file_id: str = Query(..., description="知识库文件 ID"),
     variant: str = Query("original", description="下载模式：original 或 parsed"),
-    current_user: User = Depends(get_required_user),
+    current_user: User = Depends(get_admin_user),
 ):
     await _ensure_knowledge_read_access(current_user, kb_id)
     try:
@@ -214,7 +214,7 @@ async def download_workspace_knowledge_file(
 @workspace.put("/file", response_model=dict)
 async def update_workspace_file(
     payload: UpdateWorkspaceFileContentRequest,
-    current_user: User = Depends(get_required_user),
+    current_user: User = Depends(get_admin_user),
 ):
     return await write_workspace_file_content(
         path=payload.path,
@@ -226,7 +226,7 @@ async def update_workspace_file(
 @workspace.delete("/file", response_model=dict)
 async def delete_workspace_file_route(
     path: str = Query(..., description="工作区文件或目录路径"),
-    current_user: User = Depends(get_required_user),
+    current_user: User = Depends(get_admin_user),
 ):
     return await delete_workspace_path(path=path, current_user=current_user)
 
@@ -234,7 +234,7 @@ async def delete_workspace_file_route(
 @workspace.post("/directory", response_model=dict)
 async def create_workspace_directory_route(
     payload: CreateWorkspaceDirectoryRequest,
-    current_user: User = Depends(get_required_user),
+    current_user: User = Depends(get_admin_user),
 ):
     return await create_workspace_directory(
         parent_path=payload.parent_path,
@@ -247,7 +247,7 @@ async def create_workspace_directory_route(
 async def upload_workspace_files_route(
     parent_path: str = Form(..., description="父目录路径"),
     files: list[UploadFile] = File(..., description="上传文件列表"),
-    current_user: User = Depends(get_required_user),
+    current_user: User = Depends(get_admin_user),
 ):
     return await upload_workspace_files(parent_path=parent_path, files=files, current_user=current_user)
 
@@ -255,6 +255,6 @@ async def upload_workspace_files_route(
 @workspace.get("/download")
 async def download_workspace(
     path: str = Query(..., description="工作区文件路径"),
-    current_user: User = Depends(get_required_user),
+    current_user: User = Depends(get_admin_user),
 ):
     return await download_workspace_file(path=path, current_user=current_user)

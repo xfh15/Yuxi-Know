@@ -12,11 +12,11 @@
     :bodyStyle="{ padding: 0 }"
   >
     <div class="settings-container">
-      <button class="settings-close-btn lucide-icon-btn" @click="handleClose" aria-label="关闭设置">
+      <button class="settings-close-btn lucide-icon-btn" @click="handleClose" aria-label="設定を閉じる">
         <X :size="16" />
       </button>
 
-      <!-- 侧边栏 (Desktop) -->
+      <!-- サイドバー（デスクトップ） -->
       <div class="settings-sider">
         <div class="settings-sider-nav">
           <div
@@ -26,7 +26,7 @@
             v-if="userStore.isLoggedIn"
           >
             <CircleUser class="icon" :size="18" />
-            <span>账户设置</span>
+            <span>アカウント設定</span>
           </div>
           <div
             class="sider-item"
@@ -80,13 +80,13 @@
             v-if="userStore.isLoggedIn"
           >
             <SquareTerminal class="icon" :size="18" />
-            <span>环境变量</span>
+            <span>サンドボックス環境変数</span>
           </div>
         </div>
 
       </div>
 
-      <!-- 顶部导航 (Mobile) -->
+      <!-- 上部ナビゲーション（モバイル） -->
       <div class="settings-mobile-nav">
         <div
           class="nav-item"
@@ -94,7 +94,7 @@
           @click="activeTab = 'account'"
           v-if="userStore.isLoggedIn"
         >
-          账户设置
+          アカウント設定
         </div>
         <div
           class="nav-item"
@@ -110,7 +110,7 @@
           @click="activeTab = 'agentEnv'"
           v-if="userStore.isLoggedIn"
         >
-          沙盒环境变量
+          サンドボックス環境変数
         </div>
         <div
           class="nav-item"
@@ -146,7 +146,7 @@
         </div>
       </div>
 
-      <!-- 内容区域 -->
+      <!-- コンテンツ領域 -->
       <div class="settings-content-wrapper">
         <div class="settings-content">
           <div v-show="activeTab === 'account'" v-if="userStore.isLoggedIn">

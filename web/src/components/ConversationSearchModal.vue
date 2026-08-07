@@ -98,7 +98,7 @@
             </template>
 
             <div v-if="recentRows.length === 0" class="conversation-search-empty default-empty">
-              暂无对话历史
+              会話履歴がありません
             </div>
           </template>
         </div>

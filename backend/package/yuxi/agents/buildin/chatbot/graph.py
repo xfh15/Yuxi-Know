@@ -17,6 +17,7 @@ from yuxi.agents.middlewares import (
     ImageInputCompatibilityMiddleware,
     SteerMiddleware,
     TokenUsageMiddleware,
+    WebsiteFilesMiddleware,
     create_summary_middleware,
     save_attachments_to_fs,
 )
@@ -61,6 +62,7 @@ async def _build_middlewares(context):
             context=context,
         ),
         save_attachments_to_fs,
+        WebsiteFilesMiddleware(),
         SkillsMiddleware(),
     ]
     subagent_middleware = await create_subagent_task_middleware(context)

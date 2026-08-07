@@ -5,10 +5,10 @@
         <div class="config-row">
           <div class="config-meta">
             <div class="config-title-line">
-              <span class="config-title">是否启用 Memory</span>
-              <span class="reserved-badge">预留开关</span>
+              <span class="config-title">Memory を有効にする</span>
+              <span class="reserved-badge">予約スイッチ</span>
             </div>
-            <p class="config-description">当前仅保存配置值，暂不接入智能体运行逻辑。</p>
+            <p class="config-description">現在は設定値のみ保存し、エージェントの実行ロジックには接続していません。</p>
           </div>
           <a-switch :checked="draftEnableMemory" @change="handleMemoryChange" />
         </div>
@@ -38,7 +38,7 @@ const loadUserConfig = async () => {
     const res = await userConfigApi.get()
     applyResponse(res)
   } catch (error) {
-    message.error(error.message || '加载用户配置失败')
+    message.error(error.message || 'ユーザー設定の読み込みに失敗しました')
   } finally {
     loading.value = false
   }
@@ -54,9 +54,9 @@ const saveUserConfig = async () => {
   try {
     const res = await userConfigApi.update({ enable_memory: draftEnableMemory.value })
     applyResponse(res)
-    message.success('用户配置已保存')
+    message.success('ユーザー設定を保存しました')
   } catch (error) {
-    message.error(error.message || '保存用户配置失败')
+    message.error(error.message || 'ユーザー設定の保存に失敗しました')
   } finally {
     saving.value = false
   }

@@ -302,6 +302,7 @@ import { Plus } from 'lucide-vue-next'
 import { searchMentionFiles } from '@/apis/mention_api'
 import FileTypeIcon from '@/components/common/FileTypeIcon.vue'
 import { useOutsidePointerdown } from '@/composables/useOutsidePointerdown'
+import { isImeComposing } from '@/utils/keyboard'
 import { buildMentionResourceItems } from '@/utils/mention_resource_items'
 import {
   getMentionIconComponent,
@@ -1050,6 +1051,10 @@ const handleMentionDeletion = (e) => {
 
 // 处理键盘事件
 const handleKeyPress = (e) => {
+  if (isComposing.value || isImeComposing(e)) {
+    return
+  }
+
   // @ 提及键盘导航
   if (mentionPopupVisible.value) {
     if (['ArrowDown', 'ArrowUp', 'Enter', 'Tab', 'Escape'].includes(e.key)) {

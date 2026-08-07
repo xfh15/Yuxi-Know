@@ -88,6 +88,14 @@
         :tool-calls="validToolCalls"
       />
 
+      <!-- return_direct 工具不会再触发模型回复，把工具内置的可读总结展示在工具调用之后 -->
+      <MarkdownPreview
+        v-if="toolDirectSummary"
+        :content="toolDirectSummary"
+        code-copy
+        class="message-md tool-direct-summary"
+      />
+
       <div v-if="message.isStoppedByUser" class="retry-hint">
         この回答の生成を停止しました
         <span class="retry-link" @click="emit('retryStoppedMessage', message.id)"
@@ -169,7 +177,7 @@ import { MessageProcessor } from '@/utils/messageProcessor'
 import { inferImageMimeTypeFromBase64, normalizeAttachmentPreviews } from '@/utils/file_utils'
 import { buildMentionDisplayLabels } from '@/utils/mention_utils'
 import FileTypeIcon from '@/components/common/FileTypeIcon.vue'
-import { enrichTaskToolCalls } from '@/components/ToolCallingResult/toolRegistry'
+import { enrichTaskToolCalls, parseToolCallResult } from '@/components/ToolCallingResult/toolRegistry'
 
 const props = defineProps({
   // 消息角色：'user'|'assistant'|'sent'|'received'
@@ -337,6 +345,20 @@ const parsedData = computed(() => {
     content,
     reasoning_content: reasoningContent
   }
+})
+
+// crawl_website 等 return_direct 工具完成后，模型不再生成回复；从工具结果中取出可读总结展示在工具区外侧。
+// 模型若在调工具前写了「承知しました」等正文，仍要显示总结，不能因已有 content 而隐藏。
+const toolDirectSummary = computed(() => {
+  for (const toolCall of validToolCalls.value) {
+    const toolName = toolCall?.name || toolCall?.function?.name
+    if (toolName !== 'crawl_website') continue
+
+    const result = parseToolCallResult(toolCall)
+    const summary = typeof result?.summary === 'string' ? result.summary.trim() : ''
+    if (summary) return summary
+  }
+  return ''
 })
 </script>
 
@@ -681,6 +703,10 @@ const parsedData = computed(() => {
 
 .message-md {
   margin: 8px 0;
+}
+
+.tool-direct-summary {
+  margin-top: 12px;
 }
 
 .message-image-preview-overlay {

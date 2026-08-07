@@ -26,8 +26,10 @@ function sortAgents(agents) {
 
 function getPreferredAgentId(agents, persistedId) {
   const chatAgents = agents.filter((agent) => !agent.is_subagent)
-  if (persistedId && chatAgents.some((agent) => agent.id === persistedId)) return persistedId
-  return chatAgents.find(isBuiltinAgent)?.id || chatAgents[0]?.id || null
+  // 对话入口默认不优先选中内置「智能助手」，仅在无其它主智能体时回退
+  const selectableAgents = chatAgents.filter((agent) => !isBuiltinAgent(agent))
+  if (persistedId && selectableAgents.some((agent) => agent.id === persistedId)) return persistedId
+  return selectableAgents[0]?.id || chatAgents[0]?.id || null
 }
 
 function extractContext(agent) {

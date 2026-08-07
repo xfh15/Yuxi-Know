@@ -108,7 +108,7 @@ const emit = defineEmits([
 
 const inputRef = ref(null)
 const currentImage = ref(null)
-const placeholder = '问点什么？使用 @ 可以提及哦~'
+const placeholder = '何か尋ねたいですか？'
 
 const previewAttachments = computed(() => normalizeAttachmentPreviews(props.attachments))
 const showInputOptions = computed(

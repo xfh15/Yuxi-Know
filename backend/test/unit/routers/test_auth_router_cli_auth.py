@@ -20,7 +20,7 @@ async def app_client():
         await conn.run_sync(Base.metadata.create_all)
     factory = async_sessionmaker(engine, expire_on_commit=False)
     async with factory() as db:
-        dept = Department(name="默认部门")
+        dept = Department(name="部門1")
         user = User(
             username="Admin",
             uid="admin",

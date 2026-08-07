@@ -388,12 +388,12 @@ async def initialize_admin(admin_data: InitializeAdmin, db: AsyncSession = Depen
     # 由于是首次初始化，直接使用输入的user_id
     uid = admin_data.uid
 
-    # 创建默认部门
+    # 创建默认部门（受保护 id=1，展示名可改）
     dept_repo = DepartmentRepository()
     default_department = await dept_repo.create(
         {
-            "name": "默认部门",
-            "description": "系统初始化时创建的默认部门",
+            "name": "部門1",
+            "description": "システム初期化時に作成された部門",
         }
     )
 
@@ -578,10 +578,10 @@ async def create_user(
         # 超级管理员创建用户时，使用指定的部门或默认部门
         department_id = user_data.department_id
         if department_id is None:
-            # 获取默认部门
+            # 默认部门固定为 id=1
             dept_repo = DepartmentRepository()
             departments = await dept_repo.list_departments()
-            default_dept = next((d for d in departments if d.name == "默认部门"), None)
+            default_dept = next((d for d in departments if d.id == 1), None)
             department_id = default_dept.id if default_dept else None
     else:
         # 普通管理员创建用户时，自动继承该管理员的部门

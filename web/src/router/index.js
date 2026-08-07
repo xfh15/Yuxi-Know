@@ -52,6 +52,7 @@ const router = createRouter({
       path: '/workspace',
       name: 'workspace',
       component: AppLayout,
+      meta: { requiresAuth: true, requiresAdmin: true },
       children: [
         {
           path: '',
@@ -78,6 +79,7 @@ const router = createRouter({
       path: '/agent-manage',
       name: 'agent-manage',
       component: AppLayout,
+      meta: { requiresAuth: true, requiresAdmin: true },
       children: [
         {
           path: '',
@@ -91,6 +93,7 @@ const router = createRouter({
       path: '/extensions',
       name: 'extensions',
       component: AppLayout,
+      meta: { requiresAuth: true, requiresAdmin: true },
       children: [
         {
           path: '',

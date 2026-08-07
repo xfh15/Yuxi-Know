@@ -22,6 +22,8 @@ export function useAgentThreadState({
   const resetThreadUiState = (threadState) => {
     if (!threadState) return
     threadState.replyLoadingVisible = false
+    threadState.toolProgressMessage = ''
+    threadState.toolProgressPercent = null
     threadState.pendingRequestId = null
   }
 
@@ -36,6 +38,8 @@ export function useAgentThreadState({
         runLastSeq: '0-0',
         lastRetryableJobTry: null,
         replyLoadingVisible: false,
+        toolProgressMessage: '',
+        toolProgressPercent: null,
         pendingRequestId: null,
         pendingInterrupt: null,
         agentStateRequestVersion: 0,

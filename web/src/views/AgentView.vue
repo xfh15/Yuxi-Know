@@ -227,21 +227,29 @@ const handleThreadChange = (threadId) => {
   }
 }
 
+const toAgentOption = (agent) => ({
+  label: agent.name || agent.id,
+  value: agent.id,
+  icon: agent.icon || '',
+  defaultIcon: agent.id ? generatePixelAvatar(agent.id) : '',
+  isBuiltin: isBuiltinAgent(agent)
+})
+
+// 对话选择器不展示内置「智能助手」，管理页仍可编辑；历史线程绑定该 agent 时仅显示当前名称
 const agentQuickSwitchOptions = computed(() =>
   (agents.value || [])
-    .filter((agent) => !agent.is_subagent)
-    .map((agent) => ({
-      label: agent.name || agent.id,
-      value: agent.id,
-      icon: agent.icon || '',
-      defaultIcon: agent.id ? generatePixelAvatar(agent.id) : '',
-      isBuiltin: isBuiltinAgent(agent)
-    }))
+    .filter((agent) => !agent.is_subagent && !isBuiltinAgent(agent))
+    .map(toAgentOption)
 )
 
-const currentAgentOption = computed(() =>
-  agentQuickSwitchOptions.value.find((agent) => agent.value === selectedAgentId.value)
-)
+const currentAgentOption = computed(() => {
+  const selectedId = selectedAgentId.value
+  if (!selectedId) return null
+  const fromSwitch = agentQuickSwitchOptions.value.find((agent) => agent.value === selectedId)
+  if (fromSwitch) return fromSwitch
+  const agent = (agents.value || []).find((item) => item.id === selectedId)
+  return agent ? toAgentOption(agent) : null
+})
 
 const currentAgentLabel = computed(() => {
   if (isLoadingConfig.value) return '加载中...'

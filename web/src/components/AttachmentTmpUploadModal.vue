@@ -1,8 +1,8 @@
 <template>
   <a-modal
     :open="open"
-    title="添加附件"
-    ok-text="添加附件"
+    title="添付ファイル"
+    ok-text="添付ファイル"
     cancel-text="取消"
     :confirm-loading="confirming"
     :ok-button-props="{ disabled: confirmDisabled }"

@@ -4,6 +4,7 @@ import importlib
 from types import SimpleNamespace
 
 from fastapi import FastAPI
+from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
 from server.utils.auth_middleware import get_admin_user, get_db, get_required_user
@@ -100,9 +101,14 @@ def _build_app(monkeypatch, repo_cls, *, role: str = "admin") -> TestClient:
     async def fake_user():
         return _user(role)
 
+    async def fake_admin_user():
+        if role not in {"admin", "superadmin"}:
+            raise HTTPException(status_code=403, detail="需要管理员权限")
+        return _user(role)
+
     app.dependency_overrides[get_db] = fake_db
     app.dependency_overrides[get_required_user] = fake_user
-    app.dependency_overrides[get_admin_user] = fake_user
+    app.dependency_overrides[get_admin_user] = fake_admin_user
     return TestClient(app)
 
 
@@ -143,7 +149,7 @@ def test_agent_detail_can_load_subagent_definition(monkeypatch):
     assert _ListRepo.get_definition_calls == ["worker"]
 
 
-def test_normal_user_can_create_agent(monkeypatch):
+def test_normal_user_cannot_create_agent(monkeypatch):
     _CreateRepo.created_payload = None
     client = _build_app(monkeypatch, _CreateRepo, role="user")
 
@@ -157,14 +163,8 @@ def test_normal_user_can_create_agent(monkeypatch):
         },
     )
 
-    assert response.status_code == 200, response.text
-    assert _CreateRepo.created_payload["creator"].uid == "user"
-    assert _CreateRepo.created_payload["creator"].role == "user"
-    assert _CreateRepo.created_payload["share_config"] == {
-        "access_level": "global",
-        "department_ids": [],
-        "user_uids": [],
-    }
+    assert response.status_code == 403, response.text
+    assert _CreateRepo.created_payload is None
 
 
 def test_create_subagent_backend_agent_sets_subagent_flag(monkeypatch):

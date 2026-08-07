@@ -2,12 +2,12 @@
   <div class="account-settings">
     <div class="header-section">
       <div class="header-content">
-        <div class="section-title">账户设置</div>
-        <p class="section-description">管理当前账户资料、身份信息。</p>
+        <div class="section-title">アカウント設定</div>
+        <p class="section-description">現在のアカウント情報と本人情報を管理します。</p>
       </div>
       <a-button class="lucide-icon-btn" :loading="refreshing" @click="refreshProfile">
         <template #icon><RefreshCw :size="16" :class="{ spin: refreshing }" /></template>
-        刷新
+        更新
       </a-button>
     </div>
 
@@ -35,14 +35,14 @@
               <div class="avatar-mask">
                 <Upload v-if="!avatarUploading" :size="16" />
                 <RefreshCw v-else :size="16" class="spin" />
-                <span>{{ userStore.avatar ? '更换' : '上传' }}</span>
+                <span>{{ userStore.avatar ? '変更' : 'アップロード' }}</span>
               </div>
             </div>
           </a-upload>
 
           <div class="profile-fields">
             <div class="profile-row editable-row">
-              <span class="profile-label">用户名</span>
+              <span class="profile-label">ユーザー名</span>
               <a-input
                 v-if="editingField === 'username'"
                 ref="usernameInput"
@@ -61,11 +61,11 @@
                 class="editable-value"
                 @click="startFieldEdit('username')"
               >
-                {{ userStore.username || '未设置' }}
+                {{ userStore.username || '未設定' }}
               </button>
             </div>
             <div class="profile-row editable-row">
-              <span class="profile-label">手机号</span>
+              <span class="profile-label">電話番号</span>
               <a-input
                 v-if="editingField === 'phone_number'"
                 ref="phoneInput"
@@ -84,12 +84,12 @@
                 class="editable-value"
                 @click="startFieldEdit('phone_number')"
               >
-                {{ userStore.phoneNumber || '未设置' }}
+                {{ userStore.phoneNumber || '未設定' }}
               </button>
             </div>
             <div class="profile-row">
               <span class="profile-label">UID</span>
-              <span class="profile-value mono">{{ userStore.uid || '未设置' }}</span>
+              <span class="profile-value mono">{{ userStore.uid || '未設定' }}</span>
             </div>
           </div>
         </div>
@@ -97,15 +97,15 @@
         <div class="identity-panel">
           <div class="identity-item">
             <span class="identity-icon"><ShieldCheck :size="15" /></span>
-            <span class="profile-label">权限</span>
+            <span class="profile-label">権限</span>
             <span class="profile-value" :style="{ color: getRoleColor(userStore.userRole) }">
               {{ userRoleText }}
             </span>
           </div>
           <div class="identity-item">
             <span class="identity-icon"><Building2 :size="15" /></span>
-            <span class="profile-label">部门</span>
-            <span class="profile-value">{{ userStore.departmentName || '默认部门' }}</span>
+            <span class="profile-label">部門</span>
+            <span class="profile-value">{{ userStore.departmentName || 'デフォルト部門' }}</span>
           </div>
         </div>
       </div>
@@ -142,13 +142,13 @@ const avatarDefaultSrc = computed(() => (userStore.uid ? generatePixelAvatar(use
 const userRoleText = computed(() => {
   switch (userStore.userRole) {
     case 'superadmin':
-      return '超级管理员'
+      return 'スーパー管理者'
     case 'admin':
-      return '管理员'
+      return '管理者'
     case 'user':
-      return '普通用户'
+      return '一般ユーザー'
     default:
-      return '未知角色'
+      return '不明なロール'
   }
 })
 
@@ -162,10 +162,10 @@ const refreshProfile = async () => {
   try {
     await Promise.all([userStore.getCurrentUser(), userConfigRef.value?.refresh?.()])
     syncProfileDraft()
-    message.success('账户设置已刷新')
+    message.success('アカウント設定を更新しました')
   } catch (error) {
-    console.error('刷新用户信息失败:', error)
-    message.error('刷新失败：' + (error.message || '请稍后重试'))
+    console.error('ユーザー情報の更新に失敗しました:', error)
+    message.error('更新に失敗しました: ' + (error.message || '後でもう一度お試しください'))
   } finally {
     refreshing.value = false
   }
@@ -190,7 +190,7 @@ const saveField = async (field) => {
   if (field === 'username') {
     const username = profileDraft.username.trim()
     if (username.length < 2 || username.length > 20) {
-      message.error('用户名长度必须在 2-20 个字符之间')
+      message.error('ユーザー名は 2〜20 文字で入力してください')
       return
     }
     if (username === userStore.username) {
@@ -203,7 +203,7 @@ const saveField = async (field) => {
   if (field === 'phone_number') {
     const phoneNumber = profileDraft.phone_number.trim()
     if (phoneNumber && !validatePhoneNumber(phoneNumber)) {
-      message.error('请输入正确的手机号格式')
+      message.error('正しい電話番号を入力してください')
       return
     }
     if (phoneNumber === (userStore.phoneNumber || '')) {
@@ -218,10 +218,10 @@ const saveField = async (field) => {
     await userStore.updateProfile(payload)
     syncProfileDraft()
     editingField.value = ''
-    message.success('个人资料更新成功')
+    message.success('プロフィールを更新しました')
   } catch (error) {
-    console.error('更新个人资料失败:', error)
-    message.error('更新失败：' + (error.message || '请稍后重试'))
+    console.error('プロフィールの更新に失敗しました:', error)
+    message.error('更新に失敗しました: ' + (error.message || '後でもう一度お試しください'))
   } finally {
     savingField.value = ''
   }
@@ -249,13 +249,13 @@ const validatePhoneNumber = (phone) => {
 const beforeUpload = (file) => {
   const isImage = file.type.startsWith('image/')
   if (!isImage) {
-    message.error('只能上传图片文件！')
+    message.error('画像ファイルのみアップロードできます！')
     return false
   }
 
   const isLt5M = file.size / 1024 / 1024 < 5
   if (!isLt5M) {
-    message.error('图片大小不能超过 5MB！')
+    message.error('画像サイズは 5MB 以下にしてください！')
     return false
   }
 
@@ -276,10 +276,10 @@ const handleAvatarChange = async (info) => {
   try {
     avatarUploading.value = true
     await userStore.uploadAvatar(info.file.originFileObj || info.file)
-    message.success('头像上传成功！')
+    message.success('アバターをアップロードしました！')
   } catch (error) {
-    console.error('头像上传失败:', error)
-    message.error('头像上传失败：' + (error.message || '请稍后重试'))
+    console.error('アバターのアップロードに失敗しました:', error)
+    message.error('アバターのアップロードに失敗しました: ' + (error.message || '後でもう一度お試しください'))
   } finally {
     avatarUploading.value = false
   }

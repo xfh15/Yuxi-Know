@@ -24,25 +24,25 @@
             type="button"
             class="agent-nav-btn agent-state-btn state-entry-btn"
             :class="{ active: statePanelOpen }"
-            title="查看状态"
+            title="State"
             :aria-expanded="statePanelOpen"
             aria-controls="agent-state-panel"
             @click.stop="toggleStatePanel"
           >
             <LayoutList size="16" class="nav-btn-icon" />
-            <span class="hide-text">状态</span>
+            <span class="hide-text">State</span>
           </button>
           <button
             v-if="showFileEntry && !isFilePanelOpen"
             type="button"
             class="agent-nav-btn agent-state-btn file-entry-btn"
-            title="查看文件"
+            title="Files"
             :aria-expanded="isFilePanelOpen"
             aria-controls="agent-file-panel"
             @click.stop="toggleAgentPanel"
           >
             <FolderKanban size="16" class="nav-btn-icon" />
-            <span class="hide-text">文件</span>
+            <span class="hide-text">Files</span>
           </button>
           <slot
             name="header-right"
@@ -83,11 +83,18 @@
                     @retry="retryMessage(displayItem.message)"
                   >
                   </AgentMessageComponent>
-                  <ToolCallsGroupComponent
-                    v-else
-                    :tool-calls="displayItem.toolCalls"
-                    :is-active="isToolGroupActive(row.conv, itemIndex, row.displayItems)"
-                  />
+                  <template v-else>
+                    <ToolCallsGroupComponent
+                      :tool-calls="displayItem.toolCalls"
+                      :is-active="isToolGroupActive(row.conv, itemIndex, row.displayItems)"
+                    />
+                    <MarkdownPreview
+                      v-if="displayItem.postToolSummary"
+                      :content="displayItem.postToolSummary"
+                      code-copy
+                      class="message-md tool-direct-summary"
+                    />
+                  </template>
                 </template>
                 <AgentArtifactsCard
                   v-if="row.artifacts.length"
@@ -712,6 +719,7 @@ import AgentPanel from '@/components/AgentPanel.vue'
 import AttachmentTmpUploadModal from '@/components/AttachmentTmpUploadModal.vue'
 import SubagentThreadModal from '@/components/SubagentThreadModal.vue'
 import FallbackAvatar from '@/components/common/FallbackAvatar.vue'
+import MarkdownPreview from '@/components/common/MarkdownPreview.vue'
 import { enrichTaskToolCalls, parseToolCallArgs } from '@/components/ToolCallingResult/toolRegistry'
 import { getConversationDisplayItems } from '@/utils/messageGrouping'
 import { makeChildThreadId } from '@/utils/subagentThread'
@@ -1947,7 +1955,13 @@ const replyLoadingText = computed(() => {
   const threadState = currentThreadState.value
   if (threadState?.contextCompressing) return '正在压缩上下文...'
   if (hasQueuedRequests.value) return `排队中（${queuedRequestCount.value} 条）...`
-  return '正在生成回复...'
+  if (threadState?.toolProgressMessage) {
+    const percent = Number.isFinite(Number(threadState.toolProgressPercent))
+      ? `（${Number(threadState.toolProgressPercent)}%）`
+      : ''
+    return `${threadState.toolProgressMessage}${percent}`
+  }
+  return '返信を生成している...'
 })
 const isSendButtonDisabled = computed(() => {
   return (
@@ -2031,7 +2045,7 @@ const rollbackAttachments = (threadId, previousAttachments) => {
 }
 
 const CONFIG_CHANGE_NOTICE_MESSAGE =
-  '在运行过程中切换或修改配置可能会影响最终效果，建议新建一个对话。'
+  '実行中に設定を切り替えまたは変更する場合、最終結果に影響を及ぼす可能性がある。そのため、新規の会話を作成することが推奨される。'
 
 const withConfigNoticeSync = async (task) => {
   configNoticeSyncDepth.value += 1
@@ -3659,6 +3673,11 @@ watch(currentChatId, (threadId, oldThreadId) => {
   padding: 1rem var(--page-padding);
   display: flex;
   flex-direction: column;
+}
+
+.tool-direct-summary {
+  margin: 8px 0 12px;
+  color: var(--gray-1000);
 }
 
 .conv-box {

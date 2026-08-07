@@ -104,7 +104,7 @@ const getAgentShareAllowedLevels = () => {
   return userStore.isAdmin ? ['global', 'department', 'user'] : ['user']
 }
 
-const agentModalTitle = computed(() => (editingAgentId.value ? '编辑智能体' : '新增智能体'))
+const agentModalTitle = computed(() => (editingAgentId.value ? '編集エージェント' : '追加エージェント'))
 const agentPreviewDefaultIcon = computed(() =>
   editingAgentId.value ? generatePixelAvatar(editingAgentId.value) : ''
 )
@@ -299,9 +299,11 @@ defineExpose({
     <template #title>
       <div class="agent-modal-titlebar">
         <span class="agent-modal-title">{{ agentModalTitle }}</span>
-        <div class="agent-modal-actions" v-if="agentStore.hasConfigChanges">
+        <div class="agent-modal-actions" v-if="!editingAgentId || agentStore.hasConfigChanges">
           <a-button :disabled="saving" @click="closeAgentModal">取消</a-button>
-          <a-button type="primary" :loading="saving" @click="saveAgent"> 保存（有修改） </a-button>
+          <a-button type="primary" :loading="saving" @click="saveAgent">
+            {{ editingAgentId ? '保存（有修改）' : '创建智能体' }}
+          </a-button>
         </div>
       </div>
     </template>

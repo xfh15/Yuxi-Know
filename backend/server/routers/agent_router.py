@@ -155,7 +155,7 @@ async def get_default_agent(current_user: User = Depends(get_required_user), db:
 
 @agent_router.post("")
 async def create_agent(
-    payload: AgentCreate, current_user: User = Depends(get_required_user), db: AsyncSession = Depends(get_db)
+    payload: AgentCreate, current_user: User = Depends(get_admin_user), db: AsyncSession = Depends(get_db)
 ):
     if not agent_manager.get_agent(payload.backend_id):
         raise HTTPException(status_code=404, detail=f"智能体后端 {payload.backend_id} 不存在")
@@ -197,7 +197,7 @@ async def get_agent(agent_id: str, current_user: User = Depends(get_required_use
 async def update_agent(
     agent_id: str,
     payload: AgentUpdate,
-    current_user: User = Depends(get_required_user),
+    current_user: User = Depends(get_admin_user),
     db: AsyncSession = Depends(get_db),
 ):
     repo = AgentRepository(db)
@@ -235,9 +235,7 @@ async def update_agent(
 
 
 @agent_router.delete("/{agent_id}")
-async def delete_agent(
-    agent_id: str, current_user: User = Depends(get_required_user), db: AsyncSession = Depends(get_db)
-):
+async def delete_agent(agent_id: str, current_user: User = Depends(get_admin_user), db: AsyncSession = Depends(get_db)):
     repo = AgentRepository(db)
     agent_slug = agent_id  # 兼容既有路径参数名；这里实际是 Agent.slug。
     item = await repo.get_visible_by_slug(slug=agent_slug, user=current_user, kind="any")

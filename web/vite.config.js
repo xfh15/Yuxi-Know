@@ -28,7 +28,9 @@ export default defineConfig(({ mode }) => {
         usePolling: true,
         ignored: ['**/node_modules/**', '**/dist/**']
       },
-      host: '0.0.0.0'
+      host: '0.0.0.0',
+      // 允许 cloudflared 等反向代理域名访问 dev server
+      allowedHosts: true
     }
   }
 })

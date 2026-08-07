@@ -5,12 +5,14 @@ from .model_input import ImageInputCompatibilityMiddleware
 from .steer import SteerMiddleware
 from .summary import create_summary_middleware
 from .token_usage import TokenUsageMiddleware
+from .website_files import WebsiteFilesMiddleware
 
 __all__ = [
     "DynamicToolMiddleware",
     "ImageInputCompatibilityMiddleware",
     "SteerMiddleware",
     "TokenUsageMiddleware",
+    "WebsiteFilesMiddleware",
     "context_aware_prompt",
     "context_based_model",
     "create_summary_middleware",

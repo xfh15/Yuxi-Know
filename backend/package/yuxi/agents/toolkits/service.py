@@ -17,9 +17,12 @@ def _extract_tool_info(tool_obj) -> dict:
         "args": [],
     }
 
-    if hasattr(tool_obj, "args_schema") and tool_obj.args_schema:
-        schema = tool_obj.args_schema
-        if hasattr(schema, "schema"):
+    # 元数据面向模型和管理界面，只能读取已剔除 ToolRuntime 等注入参数的调用 schema。
+    schema = getattr(tool_obj, "tool_call_schema", None)
+    if schema:
+        if hasattr(schema, "model_json_schema"):
+            schema = schema.model_json_schema()
+        elif hasattr(schema, "schema"):
             schema = schema.schema()
         for arg_name, arg_info in schema.get("properties", {}).items():
             info["args"].append(

@@ -30,7 +30,7 @@
             </button>
           </div>
         </div>
-        <span v-else><strong>文件</strong></span>
+        <span v-else><strong>Files</strong></span>
       </div>
       <div class="window-actions">
         <button

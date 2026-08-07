@@ -13,11 +13,18 @@
           :hide-tool-calls="true"
           :mention="{}"
         />
-        <ToolCallsGroupComponent
-          v-else
-          :tool-calls="displayItem.toolCalls"
-          :is-active="isToolGroupActive(conv, itemIndex, displayItemsList[convIndex])"
-        />
+        <template v-else>
+          <ToolCallsGroupComponent
+            :tool-calls="displayItem.toolCalls"
+            :is-active="isToolGroupActive(conv, itemIndex, displayItemsList[convIndex])"
+          />
+          <MarkdownPreview
+            v-if="displayItem.postToolSummary"
+            :content="displayItem.postToolSummary"
+            code-copy
+            class="message-md tool-direct-summary"
+          />
+        </template>
       </template>
     </template>
     <div v-if="conversations.length === 0" class="thread-message-list-empty">暂无消息</div>
@@ -28,6 +35,7 @@
 import { computed } from 'vue'
 import AgentMessageComponent from '@/components/AgentMessageComponent.vue'
 import ToolCallsGroupComponent from '@/components/ToolCallsGroupComponent.vue'
+import MarkdownPreview from '@/components/common/MarkdownPreview.vue'
 import { MessageProcessor } from '@/utils/messageProcessor'
 import { getConversationDisplayItems } from '@/utils/messageGrouping'
 
@@ -93,6 +101,10 @@ const isToolGroupActive = (conv, itemIndex, displayItems) =>
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.tool-direct-summary {
+  margin: 8px 0 12px;
 }
 
 .thread-message-list-empty {

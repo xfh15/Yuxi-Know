@@ -17,7 +17,7 @@
           @click="handleAttachmentClick"
         >
           <FileText :size="15" class="config-dropdown-item-icon" />
-          <span class="config-dropdown-item-label">添加附件</span>
+          <span class="config-dropdown-item-label">添付ファイル</span>
         </button>
 
         <button
@@ -30,7 +30,7 @@
           @click="handleImageUpload"
         >
           <Image :size="15" class="config-dropdown-item-icon" />
-          <span class="config-dropdown-item-label">上传图片</span>
+          <span class="config-dropdown-item-label">画像をアップロード</span>
         </button>
       </template>
 

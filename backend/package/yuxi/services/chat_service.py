@@ -331,6 +331,21 @@ def _context_compression_payload(payload: Any) -> dict | None:
     return None
 
 
+def _tool_progress_payload(payload: Any) -> dict | None:
+    """提取工具通过 custom stream writer 发出的阶段进度。"""
+
+    if not isinstance(payload, dict) or payload.get("type") != "yuxi.tool_progress":
+        return None
+    message = str(payload.get("message") or "").strip()
+    if not message:
+        return None
+    return {
+        "tool_name": str(payload.get("tool_name") or "").strip(),
+        "progress": max(0, min(int(payload.get("progress") or 0), 100)),
+        "message": message,
+    }
+
+
 def _stream_event_response(event: dict[str, Any]) -> str:
     if event.get("type") != "message_delta":
         return ""
@@ -962,6 +977,9 @@ async def stream_agent_chat(
                 compression = _context_compression_payload(payload)
                 if compression is not None:
                     yield make_chunk(status="context_compression", compression=compression, meta=meta)
+                tool_progress = _tool_progress_payload(payload)
+                if tool_progress is not None:
+                    yield make_chunk(status="tool_progress", progress=tool_progress, meta=meta)
                 continue
 
             if mode == "stream_event":
@@ -1229,6 +1247,9 @@ async def stream_agent_resume(
                 compression = _context_compression_payload(payload)
                 if compression is not None:
                     yield make_resume_chunk(status="context_compression", compression=compression, meta=meta)
+                tool_progress = _tool_progress_payload(payload)
+                if tool_progress is not None:
+                    yield make_resume_chunk(status="tool_progress", progress=tool_progress, meta=meta)
                 continue
 
             if mode != "messages":

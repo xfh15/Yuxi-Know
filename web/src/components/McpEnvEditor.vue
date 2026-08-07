@@ -19,18 +19,20 @@
           size="small"
           type="text"
           class="env-value-toggle"
-          :aria-label="isValueHidden(row) ? '查看变量值' : '隐藏变量值'"
+          :aria-label="isValueHidden(row) ? props.showValueLabel : props.hideValueLabel"
           @click="toggleValueVisible(row)"
         >
           <Eye v-if="isValueHidden(row)" :size="14" />
           <EyeOff v-else :size="14" />
         </a-button>
       </div>
-      <a-button size="small" type="text" danger @click="removeRow(index)"> 删除 </a-button>
+      <a-button size="small" type="text" danger @click="removeRow(index)">
+        {{ props.deleteLabel }}
+      </a-button>
     </div>
     <a-button @click="addRow" class="add-env">
       <template #icon><PlusOutlined /></template>
-      添加变量
+      {{ props.addVariableLabel }}
     </a-button>
   </div>
 </template>
@@ -52,6 +54,22 @@ const props = defineProps({
   concealLockedValues: {
     type: Boolean,
     default: false
+  },
+  deleteLabel: {
+    type: String,
+    default: '删除'
+  },
+  addVariableLabel: {
+    type: String,
+    default: '添加变量'
+  },
+  showValueLabel: {
+    type: String,
+    default: '查看变量值'
+  },
+  hideValueLabel: {
+    type: String,
+    default: '隐藏变量值'
   }
 })
 
@@ -163,9 +181,9 @@ watch(
   () => props.modelValue,
   (value) => {
     const normalized = normalizeEnvObject(value)
-    // 传入值若只是本组件 emit 出去的回声，则跳过重建 rows。否则 key 为空的行
-    // （刚点击新增的空行、或正在输入 key 但 value 还为空的行）会被
-    // rows -> object -> rows 的往返同步丢弃，导致无法新增环境变量。
+    // コンポーネント自身が emit した値なら rows の再構築をスキップする。
+    // そうしないと、key が空の行（追加直後、または key の入力中で value が空の行）が
+    // rows -> object -> rows の往復同期で失われ、環境変数を追加できなくなる。
     if (JSON.stringify(normalized) === JSON.stringify(rowsToObject(rows.value))) {
       return
     }
